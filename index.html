@@ -1,127 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SaveQuest</title>
 
+<!-- THEME -->
+<meta name="theme-color" content="#4f46e5">
+
+<!-- CHART -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
-  --bg:#f1f5f9;
+  --bg1:#0f172a;
+  --bg2:#1e293b;
   --card:#ffffff;
   --text:#0f172a;
-  --primary:#6366f1;
-  --secondary:#22c55e;
-  --accent:#ec4899;
+  --muted:#64748b;
+  --primary:#4f46e5;
+  --accent:#22c55e;
   --danger:#ef4444;
 }
-
 body.dark{
-  --bg:#020617;
-  --card:#0f172a;
+  --card:#020617;
   --text:#e5e7eb;
 }
-
 *{box-sizing:border-box;font-family:Inter,system-ui}
-
 body{
   margin:0;
-  background:var(--bg);
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
   color:var(--text);
 }
-
 header{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  padding:28px 16px;
   text-align:center;
+  padding:32px 18px;
+  color:white;
 }
-
-header h1{margin:0;font-size:28px}
-header p{margin-top:6px;opacity:.95}
-
+header h1{margin:0;font-size:30px}
+header p{opacity:.9}
 .container{
   max-width:520px;
   margin:auto;
   padding:14px;
 }
-
 .card{
   background:var(--card);
-  border-radius:16px;
+  border-radius:18px;
   padding:16px;
-  margin-bottom:14px;
-  box-shadow:0 10px 25px rgba(0,0,0,.06);
+  margin-bottom:16px;
+  box-shadow:0 15px 35px rgba(0,0,0,.15);
 }
-
-h2{
-  margin:0 0 10px;
-  font-size:18px;
-}
-
+h2{margin:0 0 10px;font-size:18px}
 input,select,button{
   width:100%;
   padding:12px;
   margin-top:8px;
   border-radius:12px;
   border:1px solid #cbd5f5;
-  font-size:14px;
 }
-
 button{
   background:var(--primary);
   color:white;
   border:none;
   font-weight:600;
-  cursor:pointer;
 }
-
-button.secondary{background:var(--secondary)}
-button.danger{background:var(--danger)}
-
-.small{font-size:13px;opacity:.85}
+.secondary{background:var(--accent)}
+.small{font-size:13px;color:var(--muted)}
 .step{
   display:flex;
-  gap:10px;
+  gap:12px;
   margin-bottom:10px;
 }
 .step span{
+  min-width:28px;height:28px;
   background:var(--primary);
   color:white;
   border-radius:50%;
-  width:26px;
-  height:26px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:700;
 }
-
 .badge{
-  display:inline-block;
-  background:var(--secondary);
+  background:var(--accent);
   color:white;
   padding:4px 10px;
   border-radius:999px;
   font-size:12px;
   font-weight:600;
-}
-
-.alert{color:var(--danger);font-weight:600}
-.lock{color:var(--secondary);font-weight:600}
-
-.catRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:6px;
-}
-.catRow button{
-  width:auto;
-  padding:6px 10px;
-  background:var(--danger);
 }
 </style>
 </head>
@@ -129,217 +97,145 @@ button.danger{background:var(--danger)}
 <body>
 
 <header>
-  <h1>💰 SaveQuest</h1>
-  <p>Turn budgeting into a game — save smarter every month</p>
+  <h1>SaveQuest</h1>
+  <p>Build discipline. Track money. Level up your future.</p>
 </header>
 
 <div class="container">
 
-<!-- 👋 INTRO / HOW IT WORKS -->
 <div class="card">
-  <h2>👋 Welcome to SaveQuest</h2>
+  <h2>How it works</h2>
 
-  <div class="step">
-    <span>1</span>
-    <div>Enter your <b>monthly income</b></div>
-  </div>
+  <div class="step"><span>1</span><div>Enter your <b>monthly income</b></div></div>
+  <div class="step"><span>2</span><div>See your <b>daily spending limit</b></div></div>
+  <div class="step"><span>3</span><div>Add expenses & stay disciplined</div></div>
+  <div class="step"><span>4</span><div>Earn XP & build habits</div></div>
 
-  <div class="step">
-    <span>2</span>
-    <div>Money is auto-split into <b>needs, wants & savings</b></div>
-  </div>
-
-  <div class="step">
-    <span>3</span>
-    <div>Add expenses & stay under your daily limit</div>
-  </div>
-
-  <div class="step">
-    <span>4</span>
-    <div>Earn <b>XP</b>, level up & build saving habits 🏆</div>
-  </div>
-
-  <p class="small">No login. No ads. Your data stays on your device.</p>
+  <p class="small">No login • Offline ready • Private</p>
 </div>
 
-<!-- SETTINGS -->
 <div class="card">
-  <button onclick="toggleDark()">🌙 Toggle Dark Mode</button>
+  <button onclick="toggleDark()">Toggle Dark Mode</button>
 </div>
 
-<!-- INCOME -->
 <div class="card">
-  <h2>💵 Monthly Income</h2>
-  <input id="income" type="number" placeholder="Enter income (₹)">
-  <button onclick="setup()">Save Income</button>
+  <h2>Monthly Income</h2>
+  <input id="income" type="number" placeholder="Enter income">
+  <button onclick="setup()">Save</button>
 </div>
 
-<!-- DASHBOARD -->
 <div class="card">
-  <h2>📊 Dashboard</h2>
+  <h2>Dashboard</h2>
   <p>Balance: ₹<b id="balance">0</b></p>
-  <p>Daily Spend Limit: ₹<b id="daily">0</b></p>
-  <p>XP: <b id="xp">0</b> | Level: <span class="badge" id="level">Beginner</span></p>
+  <p>Daily Limit: ₹<b id="daily">0</b></p>
+  <p>XP: <b id="xp">0</b> | <span class="badge" id="level">Beginner</span></p>
 </div>
 
-<!-- SAVINGS LOCK -->
 <div class="card">
-  <h2>🔒 Savings Lock</h2>
-  <p class="lock">Minimum Savings: <b id="lockVal">40</b>%</p>
-  <input id="lockInput" type="number" placeholder="Increase lock % (max 60)">
-  <button class="secondary" onclick="setLock()">Increase Lock</button>
-</div>
-
-<!-- SAVINGS GOAL -->
-<div class="card">
-  <h2>🎯 Savings Goal</h2>
-  <canvas id="savingsRing"></canvas>
-  <p class="small">Target Savings: ₹<b id="savedAmount">0</b></p>
-</div>
-
-<!-- CUSTOM CATEGORY -->
-<div class="card">
-  <h2>➕ Custom Categories (≤15%)</h2>
-  <input id="newCat" placeholder="Category name">
-  <input id="newPct" type="number" placeholder="Percent">
-  <button onclick="addCategory()">Add Category</button>
-  <div id="customList"></div>
-</div>
-
-<!-- ADD EXPENSE -->
-<div class="card">
-  <h2>🧾 Add Expense</h2>
+  <h2>Add Expense</h2>
   <input id="amount" type="number" placeholder="Amount">
-  <select id="category"></select>
-  <button onclick="addExpense()">Add Expense</button>
-</div>
-
-<!-- BUDGET CHART -->
-<div class="card">
-  <h2>📈 Budget Breakdown</h2>
-  <canvas id="budgetChart"></canvas>
+  <button onclick="addExpense()">Add</button>
 </div>
 
 <div class="card">
-  <div id="alert" class="alert"></div>
-</div>
-
-<div class="card">
-  <button class="danger" onclick="monthlyReset()">🔁 Monthly Reset</button>
+  <canvas id="chart"></canvas>
 </div>
 
 </div>
 
 <script>
+/* ---------- INLINE MANIFEST ---------- */
+const manifest = {
+  name: "SaveQuest",
+  short_name: "SaveQuest",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#0f172a",
+  theme_color: "#4f46e5",
+  icons: [{
+    src: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+    sizes: "512x512",
+    type: "image/png"
+  }]
+};
+const manifestBlob = new Blob(
+  [JSON.stringify(manifest)],
+  {type: "application/json"}
+);
+document.head.appendChild(
+  Object.assign(document.createElement("link"),{
+    rel:"manifest",
+    href:URL.createObjectURL(manifestBlob)
+  })
+);
+
+/* ---------- INLINE SERVICE WORKER ---------- */
+if("serviceWorker" in navigator){
+  const swCode = `
+    self.addEventListener('install',e=>{
+      e.waitUntil(
+        caches.open('savequest')
+        .then(c=>c.addAll(['./']))
+      );
+    });
+    self.addEventListener('fetch',e=>{
+      e.respondWith(
+        caches.match(e.request).then(r=>r||fetch(e.request))
+      );
+    });
+  `;
+  const swBlob = new Blob([swCode],{type:"text/javascript"});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob));
+}
+
+/* ---------- APP LOGIC ---------- */
 let state = JSON.parse(localStorage.getItem("savequest")) || {
- income:0,
- expenses:[],
- dark:false,
- base:{Food:30,Shopping:10,Entertainment:10,Savings:50},
- custom:{},
- lock:40,
- xp:0,
- lastXP:""
+ income:0, expenses:[], xp:0, dark:false
 };
 
 function save(){localStorage.setItem("savequest",JSON.stringify(state))}
-document.body.classList.toggle("dark",state.dark);
 
 function toggleDark(){
  state.dark=!state.dark;
- document.body.classList.toggle("dark");
+ document.body.classList.toggle("dark",state.dark);
  save();
 }
 
 function setup(){state.income=+income.value;save();update();}
 
-function setLock(){
- let v=+lockInput.value;
- if(v>state.lock && v<=60){state.lock=v;save();update();}
- lockInput.value="";
-}
-
-function addCategory(){
- let p=+newPct.value;
- let used=Object.values(state.custom).reduce((a,b)=>a+b,0);
- if(!newCat.value||p<=0||used+p>15)return alert("Limit exceeded");
- state.custom[newCat.value]=p;
- newCat.value="";newPct.value="";
- save();update();
-}
-
 function addExpense(){
  if(amount.value<=0)return;
- state.expenses.push({amount:+amount.value,cat:category.value});
- giveXP();amount.value="";
+ state.expenses.push(+amount.value);
+ state.xp+=5;
+ amount.value="";
  save();update();
 }
 
-function giveXP(){
- let d=new Date().toDateString();
- if(state.lastXP!==d){state.xp+=5;state.lastXP=d;}
-}
-
-function getLevel(){
- if(state.xp>=250)return"Finance Pro";
- if(state.xp>=120)return"Smart Saver";
- if(state.xp>=50)return"Planner";
+function level(){
+ if(state.xp>200)return"Finance Pro";
+ if(state.xp>100)return"Smart Saver";
  return"Beginner";
-}
-
-function monthlyReset(){
- if(confirm("Reset for new month?")){
-   state.expenses=[];save();update();
- }
 }
 
 function update(){
  income.value=state.income;
- lockVal.innerText=state.lock;
  xp.innerText=state.xp;
- level.innerText=getLevel();
+ level.innerText=level();
 
- let spent=state.expenses.reduce((a,b)=>a+b.amount,0);
+ let spent=state.expenses.reduce((a,b)=>a+b,0);
  balance.innerText=state.income-spent;
  daily.innerText=Math.floor((state.income-spent)/30);
 
- let budget={...state.base,...state.custom};
-
- category.innerHTML="";
- Object.keys(budget).forEach(c=>{
-  if(c!=="Savings"){
-   let o=document.createElement("option");
-   o.text=c;category.add(o);
-  }
- });
-
- drawBudget(budget);
- drawSavings(budget.Savings);
-}
-
-function drawBudget(b){
- if(window.bChart)bChart.destroy();
- bChart=new Chart(budgetChart,{
-  type:"bar",
-  data:{labels:Object.keys(b),
-  datasets:[{data:Object.values(b).map(p=>state.income*p/100)}]},
-  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+ if(window.chartObj) chartObj.destroy();
+ chartObj=new Chart(chart,{
+   type:"doughnut",
+   data:{datasets:[{data:[spent,state.income-spent]}]},
+   options:{cutout:"70%"}
  });
 }
-
-function drawSavings(p){
- let t=state.income*p/100;
- savedAmount.innerText=Math.round(t);
- if(window.sChart)sChart.destroy();
- sChart=new Chart(savingsRing,{
-  type:"doughnut",
-  data:{datasets:[{data:[t,state.income-t]}]},
-  options:{cutout:"70%"}
- });
-}
-
 update();
 </script>
+
 </body>
 </html>
 
