@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SaveQuest</title>
 
+<!-- THEME -->
 <meta name="theme-color" content="#4f46e5">
+
+<!-- CHART -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -17,6 +20,7 @@
   --muted:#64748b;
   --primary:#4f46e5;
   --accent:#22c55e;
+  --danger:#ef4444;
 }
 body.dark{
   --card:#020617;
@@ -30,10 +34,12 @@ body{
   color:var(--text);
 }
 header{
-  padding:32px 18px;
   text-align:center;
+  padding:32px 18px;
   color:white;
 }
+header h1{margin:0;font-size:30px}
+header p{opacity:.9}
 .container{
   max-width:520px;
   margin:auto;
@@ -47,7 +53,7 @@ header{
   box-shadow:0 15px 35px rgba(0,0,0,.15);
 }
 h2{margin:0 0 10px;font-size:18px}
-input,button{
+input,select,button{
   width:100%;
   padding:12px;
   margin-top:8px;
@@ -59,13 +65,16 @@ button{
   color:white;
   border:none;
   font-weight:600;
-  cursor:pointer;
 }
-button:hover{opacity:0.9}
+.secondary{background:var(--accent)}
 .small{font-size:13px;color:var(--muted)}
-.step{display:flex;gap:12px;margin-bottom:10px}
+.step{
+  display:flex;
+  gap:12px;
+  margin-bottom:10px;
+}
 .step span{
-  width:28px;height:28px;
+  min-width:28px;height:28px;
   background:var(--primary);
   color:white;
   border-radius:50%;
@@ -80,56 +89,12 @@ button:hover{opacity:0.9}
   padding:4px 10px;
   border-radius:999px;
   font-size:12px;
-}
-.overlay{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  z-index:10;
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
-
-<!-- ================= FIRST PAGE ================= -->
-<div id="onboarding" class="overlay" style="display:none">
-  <div class="card" style="max-width:420px">
-    <h2>Welcome to SaveQuest</h2>
-    <p class="small">
-      SaveQuest helps you manage money with discipline,
-      daily limits, and habit-building — without stress.
-    </p>
-
-    <div class="step"><span>1</span><div>Enter your monthly income</div></div>
-    <div class="step"><span>2</span><div>Follow a daily spending limit</div></div>
-    <div class="step"><span>3</span><div>Track expenses easily</div></div>
-    <div class="step"><span>4</span><div>Earn XP & build habits</div></div>
-
-    <p class="small">No login • Works offline • Private</p>
-    <button onclick="startApp()">Get Started</button>
-  </div>
-</div>
-
-<!-- ================= iOS INSTALL PROMPT ================= -->
-<div id="iosPrompt" class="overlay" style="display:none">
-  <div class="card" style="max-width:420px">
-    <h2>Install SaveQuest</h2>
-    <p class="small">
-      On iPhone:
-      <br>1️⃣ Tap <b>Share</b>
-      <br>2️⃣ Tap <b>Add to Home Screen</b>
-    </p>
-    <button onclick="closeIOS()">Got it</button>
-  </div>
-</div>
-
-<!-- ================= MAIN APP ================= -->
-<div id="app" style="display:none">
 
 <header>
   <h1>SaveQuest</h1>
@@ -137,6 +102,17 @@ button:hover{opacity:0.9}
 </header>
 
 <div class="container">
+
+<div class="card">
+  <h2>How it works</h2>
+
+  <div class="step"><span>1</span><div>Enter your <b>monthly income</b></div></div>
+  <div class="step"><span>2</span><div>See your <b>daily spending limit</b></div></div>
+  <div class="step"><span>3</span><div>Add expenses & stay disciplined</div></div>
+  <div class="step"><span>4</span><div>Earn XP & build habits</div></div>
+
+  <p class="small">No login • Offline ready • Private</p>
+</div>
 
 <div class="card">
   <button onclick="toggleDark()">Toggle Dark Mode</button>
@@ -152,7 +128,7 @@ button:hover{opacity:0.9}
   <h2>Dashboard</h2>
   <p>Balance: ₹<b id="balance">0</b></p>
   <p>Daily Limit: ₹<b id="daily">0</b></p>
-  <p>XP: <b id="xp">0</b> | <span class="badge" id="levelBadge">Beginner</span></p>
+  <p>XP: <b id="xp">0</b> | <span class="badge" id="level">Beginner</span></p>
 </div>
 
 <div class="card">
@@ -166,91 +142,58 @@ button:hover{opacity:0.9}
 </div>
 
 </div>
-</div>
 
 <script>
-/* ================= PWA MANIFEST ================= */
+/* ---------- INLINE MANIFEST ---------- */
 const manifest = {
-  name:"SaveQuest",
-  short_name:"SaveQuest",
-  start_url:".",
-  display:"standalone",
-  theme_color:"#4f46e5",
-  background_color:"#0f172a",
-  icons:[{
-    src:"https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
-    sizes:"512x512",
-    type:"image/png"
+  name: "SaveQuest",
+  short_name: "SaveQuest",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#0f172a",
+  theme_color: "#4f46e5",
+  icons: [{
+    src: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+    sizes: "512x512",
+    type: "image/png"
   }]
 };
-const manifestBlob = new Blob([JSON.stringify(manifest)],{type:"application/json"});
-document.head.appendChild(Object.assign(document.createElement("link"),{
-  rel:"manifest",href:URL.createObjectURL(manifestBlob)
-}));
+const manifestBlob = new Blob(
+  [JSON.stringify(manifest)],
+  {type: "application/json"}
+);
+document.head.appendChild(
+  Object.assign(document.createElement("link"),{
+    rel:"manifest",
+    href:URL.createObjectURL(manifestBlob)
+  })
+);
 
-/* ================= SERVICE WORKER ================= */
+/* ---------- INLINE SERVICE WORKER ---------- */
 if("serviceWorker" in navigator){
   const swCode = `
     self.addEventListener('install',e=>{
-      e.waitUntil(caches.open('sq').then(c=>c.addAll(['./'])))
+      e.waitUntil(
+        caches.open('savequest')
+        .then(c=>c.addAll(['./']))
+      );
     });
     self.addEventListener('fetch',e=>{
-      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))
+      e.respondWith(
+        caches.match(e.request).then(r=>r||fetch(e.request))
+      );
     });
   `;
-  navigator.serviceWorker.register(URL.createObjectURL(
-    new Blob([swCode],{type:"text/javascript"})
-  )).catch(err => console.log('SW registration failed:', err));
+  const swBlob = new Blob([swCode],{type:"text/javascript"});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob));
 }
 
-/* ================= INSTALL PROMPTS ================= */
-let deferredPrompt;
-window.addEventListener("beforeinstallprompt",e=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  setTimeout(()=>{
-    if(deferredPrompt) deferredPrompt.prompt();
-  },2000);
-});
-
-function isIOS(){
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
-if(isIOS() && !localStorage.getItem("iosShown")){
-  setTimeout(()=>{
-    document.getElementById("iosPrompt").style.display="flex";
-    localStorage.setItem("iosShown","yes");
-  },2000);
-}
-function closeIOS(){
-  document.getElementById("iosPrompt").style.display="none";
-}
-
-/* ================= FIRST PAGE LOGIC ================= */
-function startApp(){
-  localStorage.setItem("started","yes");
-  document.getElementById("onboarding").style.display="none";
-  document.getElementById("app").style.display="block";
-}
-(function(){
-  if(localStorage.getItem("started")){
-    document.getElementById("app").style.display="block";
-  }else{
-    document.getElementById("onboarding").style.display="flex";
-  }
-})();
-
-/* ================= APP LOGIC ================= */
-let state = JSON.parse(localStorage.getItem("sq")) || {
+/* ---------- APP LOGIC ---------- */
+let state = JSON.parse(localStorage.getItem("savequest")) || {
  income:0, expenses:[], xp:0, dark:false
 };
 
-// Apply dark mode on load
-if(state.dark){
-  document.body.classList.add("dark");
-}
-
-function save(){localStorage.setItem("sq",JSON.stringify(state))}
+function save(){localStorage.setItem("savequest",JSON.stringify(state))}
 
 function toggleDark(){
  state.dark=!state.dark;
@@ -258,68 +201,40 @@ function toggleDark(){
  save();
 }
 
-function setup(){
-  const incomeInput = document.getElementById("income");
-  state.income=+incomeInput.value;
-  save();
-  update();
-}
+function setup(){state.income=+income.value;save();update();}
 
 function addExpense(){
-  const amountInput = document.getElementById("amount");
-  if(amountInput.value<=0)return;
-  state.expenses.push(+amountInput.value);
-  state.xp+=5;
-  amountInput.value="";
-  save();
-  update();
+ if(amount.value<=0)return;
+ state.expenses.push(+amount.value);
+ state.xp+=5;
+ amount.value="";
+ save();update();
 }
 
-function getLevel(){
+function level(){
  if(state.xp>200)return"Finance Pro";
  if(state.xp>100)return"Smart Saver";
  return"Beginner";
 }
 
 function update(){
- const incomeInput = document.getElementById("income");
- const xpDisplay = document.getElementById("xp");
- const levelDisplay = document.getElementById("levelBadge");
- const balanceDisplay = document.getElementById("balance");
- const dailyDisplay = document.getElementById("daily");
- const chartCanvas = document.getElementById("chart");
- 
- incomeInput.value=state.income;
- xpDisplay.innerText=state.xp;
- levelDisplay.innerText=getLevel();
- 
+ income.value=state.income;
+ xp.innerText=state.xp;
+ level.innerText=level();
+
  let spent=state.expenses.reduce((a,b)=>a+b,0);
- balanceDisplay.innerText=state.income-spent;
- dailyDisplay.innerText=Math.floor((state.income-spent)/30);
- 
- if(window.myChart)window.myChart.destroy();
- window.myChart=new Chart(chartCanvas,{
-  type:"doughnut",
-  data:{
-    labels:["Spent","Remaining"],
-    datasets:[{
-      data:[spent,state.income-spent],
-      backgroundColor:["#ef4444","#22c55e"],
-      borderWidth:0
-    }]
-  },
-  options:{
-    cutout:"70%",
-    plugins:{
-      legend:{display:true,position:"bottom"}
-    }
-  }
+ balance.innerText=state.income-spent;
+ daily.innerText=Math.floor((state.income-spent)/30);
+
+ if(window.chartObj) chartObj.destroy();
+ chartObj=new Chart(chart,{
+   type:"doughnut",
+   data:{datasets:[{data:[spent,state.income-spent]}]},
+   options:{cutout:"70%"}
  });
 }
-
 update();
 </script>
 
 </body>
 </html>
-
