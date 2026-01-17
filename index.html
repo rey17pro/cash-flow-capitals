@@ -59,7 +59,9 @@ button{
   color:white;
   border:none;
   font-weight:600;
+  cursor:pointer;
 }
+button:hover{opacity:0.9}
 .small{font-size:13px;color:var(--muted)}
 .step{display:flex;gap:12px;margin-bottom:10px}
 .step span{
@@ -150,7 +152,7 @@ button{
   <h2>Dashboard</h2>
   <p>Balance: ₹<b id="balance">0</b></p>
   <p>Daily Limit: ₹<b id="daily">0</b></p>
-  <p>XP: <b id="xp">0</b> | <span class="badge" id="level">Beginner</span></p>
+  <p>XP: <b id="xp">0</b> | <span class="badge" id="levelBadge">Beginner</span></p>
 </div>
 
 <div class="card">
@@ -198,7 +200,7 @@ if("serviceWorker" in navigator){
   `;
   navigator.serviceWorker.register(URL.createObjectURL(
     new Blob([swCode],{type:"text/javascript"})
-  ));
+  )).catch(err => console.log('SW registration failed:', err));
 }
 
 /* ================= INSTALL PROMPTS ================= */
@@ -206,7 +208,9 @@ let deferredPrompt;
 window.addEventListener("beforeinstallprompt",e=>{
   e.preventDefault();
   deferredPrompt=e;
-  setTimeout(()=>deferredPrompt.prompt(),2000);
+  setTimeout(()=>{
+    if(deferredPrompt) deferredPrompt.prompt();
+  },2000);
 });
 
 function isIOS(){
@@ -225,14 +229,14 @@ function closeIOS(){
 /* ================= FIRST PAGE LOGIC ================= */
 function startApp(){
   localStorage.setItem("started","yes");
-  onboarding.style.display="none";
-  app.style.display="block";
+  document.getElementById("onboarding").style.display="none";
+  document.getElementById("app").style.display="block";
 }
 (function(){
   if(localStorage.getItem("started")){
-    app.style.display="block";
+    document.getElementById("app").style.display="block";
   }else{
-    onboarding.style.display="flex";
+    document.getElementById("onboarding").style.display="flex";
   }
 })();
 
@@ -240,41 +244,82 @@ function startApp(){
 let state = JSON.parse(localStorage.getItem("sq")) || {
  income:0, expenses:[], xp:0, dark:false
 };
+
+// Apply dark mode on load
+if(state.dark){
+  document.body.classList.add("dark");
+}
+
 function save(){localStorage.setItem("sq",JSON.stringify(state))}
+
 function toggleDark(){
  state.dark=!state.dark;
  document.body.classList.toggle("dark",state.dark);
  save();
 }
-function setup(){state.income=+income.value;save();update();}
-function addExpense(){
- if(amount.value<=0)return;
- state.expenses.push(+amount.value);
- state.xp+=5;
- amount.value="";
- save();update();
+
+function setup(){
+  const incomeInput = document.getElementById("income");
+  state.income=+incomeInput.value;
+  save();
+  update();
 }
-function level(){
+
+function addExpense(){
+  const amountInput = document.getElementById("amount");
+  if(amountInput.value<=0)return;
+  state.expenses.push(+amountInput.value);
+  state.xp+=5;
+  amountInput.value="";
+  save();
+  update();
+}
+
+function getLevel(){
  if(state.xp>200)return"Finance Pro";
  if(state.xp>100)return"Smart Saver";
  return"Beginner";
 }
+
 function update(){
- income.value=state.income;
- xp.innerText=state.xp;
- level.innerText=level();
+ const incomeInput = document.getElementById("income");
+ const xpDisplay = document.getElementById("xp");
+ const levelDisplay = document.getElementById("levelBadge");
+ const balanceDisplay = document.getElementById("balance");
+ const dailyDisplay = document.getElementById("daily");
+ const chartCanvas = document.getElementById("chart");
+ 
+ incomeInput.value=state.income;
+ xpDisplay.innerText=state.xp;
+ levelDisplay.innerText=getLevel();
+ 
  let spent=state.expenses.reduce((a,b)=>a+b,0);
- balance.innerText=state.income-spent;
- daily.innerText=Math.floor((state.income-spent)/30);
- if(window.c)c.destroy();
- c=new Chart(chart,{
+ balanceDisplay.innerText=state.income-spent;
+ dailyDisplay.innerText=Math.floor((state.income-spent)/30);
+ 
+ if(window.myChart)window.myChart.destroy();
+ window.myChart=new Chart(chartCanvas,{
   type:"doughnut",
-  data:{datasets:[{data:[spent,state.income-spent]}]},
-  options:{cutout:"70%"}
+  data:{
+    labels:["Spent","Remaining"],
+    datasets:[{
+      data:[spent,state.income-spent],
+      backgroundColor:["#ef4444","#22c55e"],
+      borderWidth:0
+    }]
+  },
+  options:{
+    cutout:"70%",
+    plugins:{
+      legend:{display:true,position:"bottom"}
+    }
+  }
  });
 }
+
 update();
 </script>
 
 </body>
 </html>
+
