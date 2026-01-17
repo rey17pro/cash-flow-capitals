@@ -8,103 +8,330 @@
 
 <style>
 :root{
-  --bg:#f8fafc; --card:#ffffff; --text:#0f172a;
-  --primary:#1e3a8a; --accent:#2563eb;
-  --danger:#b91c1c; --input:#ffffff;
+  --bg:#f0f9ff; 
+  --card:#ffffff; 
+  --text:#0f172a;
+  --primary:#3b82f6; 
+  --accent:#8b5cf6;
+  --success:#10b981;
+  --danger:#ef4444;
+  --warning:#f59e0b;
+  --pink:#ec4899;
+  --input:#ffffff;
+  --shadow:rgba(59,130,246,0.1);
 }
 body.dark{
-  --bg:#020617; --card:#0f172a;
-  --text:#e5e7eb; --input:#020617;
+  --bg:#0f172a; 
+  --card:#1e293b;
+  --text:#f1f5f9; 
+  --input:#334155;
+  --shadow:rgba(0,0,0,0.3);
 }
-*{box-sizing:border-box;font-family:Inter,system-ui}
-body{margin:0;background:var(--bg);color:var(--text)}
-header{background:var(--primary);color:white;padding:18px;text-align:center}
-.container{max-width:480px;margin:auto;padding:14px}
-.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:14px}
-h2{font-size:17px;margin-bottom:8px}
+
+*{box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,sans-serif}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  transition:background 0.3s ease;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(135deg, #667eea20 0%, #764ba220 50%, #f093fb20 100%);
+  z-index:-1;
+  pointer-events:none;
+}
+
+header{
+  background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color:white;
+  padding:24px 18px;
+  text-align:center;
+  box-shadow:0 4px 20px rgba(102,126,234,0.3);
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-0.5px;
+}
+
+header p{
+  margin:8px 0 0;
+  opacity:0.95;
+  font-size:14px;
+}
+
+.container{
+  max-width:500px;
+  margin:auto;
+  padding:16px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 4px 20px var(--shadow);
+  border:1px solid rgba(255,255,255,0.1);
+  transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px var(--shadow);
+}
+
+h2{
+  font-size:18px;
+  margin:0 0 12px;
+  font-weight:700;
+  background:linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
 input,select,button{
-  width:100%;padding:12px;margin-top:8px;
-  border-radius:10px;border:1px solid #64748b;
-  background:var(--input);color:var(--text)
+  width:100%;
+  padding:12px 14px;
+  margin-top:8px;
+  border-radius:10px;
+  border:2px solid #e2e8f0;
+  background:var(--input);
+  color:var(--text);
+  font-size:14px;
+  transition:all 0.2s ease;
 }
-button{background:var(--accent);color:white;border:none;font-weight:600}
-.small{font-size:13px;opacity:0.85}
-.alert{color:var(--danger);font-weight:600}
-.lock{color:#16a34a;font-weight:600}
-.catRow{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
-.catRow button{width:auto;padding:6px 10px;background:#b91c1c}
+
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+
+button{
+  background:linear-gradient(135deg, var(--primary), var(--accent));
+  color:white;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  font-size:13px;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(59,130,246,0.4);
+}
+
+button:active{
+  transform:translateY(0);
+}
+
+.btn-dark{
+  background:linear-gradient(135deg, #1e293b, #334155);
+}
+
+.btn-danger{
+  background:linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.btn-success{
+  background:linear-gradient(135deg, #10b981, #059669);
+}
+
+.small{
+  font-size:13px;
+  opacity:0.85;
+}
+
+.alert{
+  color:var(--danger);
+  font-weight:600;
+  padding:12px;
+  background:rgba(239,68,68,0.1);
+  border-radius:8px;
+  border-left:4px solid var(--danger);
+}
+
+.lock{
+  color:var(--success);
+  font-weight:600;
+  padding:12px;
+  background:rgba(16,185,129,0.1);
+  border-radius:8px;
+  border-left:4px solid var(--success);
+  margin-bottom:8px;
+}
+
+.dashboard-grid{
+  display:grid;
+  gap:12px;
+  margin-top:10px;
+}
+
+.stat-box{
+  padding:14px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+.stat-box.balance{
+  background:linear-gradient(135deg, #10b981, #059669);
+  color:white;
+}
+
+.stat-box.daily{
+  background:linear-gradient(135deg, #f59e0b, #d97706);
+  color:white;
+}
+
+.stat-box.xp{
+  background:linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color:white;
+}
+
+.stat-box b{
+  display:block;
+  font-size:22px;
+  margin-top:4px;
+}
+
+.catRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:8px;
+  padding:10px;
+  background:rgba(139,92,246,0.05);
+  border-radius:8px;
+  border-left:3px solid var(--accent);
+}
+
+.catRow button{
+  width:auto;
+  padding:6px 12px;
+  margin:0;
+  font-size:12px;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  background:linear-gradient(135deg, #ec4899, #d946ef);
+  color:white;
+}
+
+.savings-target{
+  text-align:center;
+  margin-top:12px;
+  padding:12px;
+  background:rgba(16,185,129,0.1);
+  border-radius:8px;
+}
+
+.savings-target b{
+  font-size:24px;
+  color:var(--success);
+}
 </style>
 </head>
 
 <body>
 <header>
-<h1>SaveQuest</h1>
+<h1>💰 SaveQuest</h1>
 <p>Smart Budgeting for Students & First Jobbers</p>
 </header>
 
 <div class="container">
 
 <div class="card">
-<button onclick="toggleDark()">Toggle Dark Mode</button>
+<button class="btn-dark" onclick="toggleDark()">🌓 Toggle Dark Mode</button>
 </div>
 
 <div class="card">
-<h2>Monthly Income</h2>
-<input id="income" type="number" placeholder="Enter income">
-<button onclick="setup()">Save</button>
+<h2>💵 Monthly Income</h2>
+<input id="income" type="number" placeholder="Enter your monthly income">
+<button onclick="setup()">💾 Save Income</button>
 </div>
 
 <div class="card">
-<h2>Dashboard</h2>
-<div>Balance: ₹<b id="balance">0</b></div>
-<div>Daily Limit: ₹<b id="daily">0</b></div>
-<div>XP: <b id="xp">0</b> | Level: <b id="level">Beginner</b></div>
+<h2>📊 Dashboard</h2>
+<div class="dashboard-grid">
+  <div class="stat-box balance">
+    Balance
+    <b>₹<span id="balance">0</span></b>
+  </div>
+  <div class="stat-box daily">
+    Daily Limit
+    <b>₹<span id="daily">0</span></b>
+  </div>
+  <div class="stat-box xp">
+    XP: <span id="xp">0</span>
+    <b id="level">Beginner</b>
+  </div>
+</div>
 </div>
 
 <div class="card">
-<h2>Savings Lock</h2>
-<div class="lock">Minimum Savings: <b id="lockVal">40</b>%</div>
-<input id="lockInput" type="number" placeholder="Increase lock %">
-<button onclick="setLock()">Increase Lock</button>
+<h2>🔒 Savings Lock</h2>
+<div class="lock">🛡️ Minimum Savings: <b id="lockVal">40</b>%</div>
+<input id="lockInput" type="number" placeholder="Increase lock % (max 60%)">
+<button class="btn-success" onclick="setLock()">🔐 Increase Lock</button>
 </div>
 
 <div class="card">
-<h2>Savings Goal</h2>
+<h2>🎯 Savings Goal</h2>
 <canvas id="savingsRing"></canvas>
-<p class="small">Target Savings: ₹<b id="savedAmount">0</b></p>
+<div class="savings-target">
+  Target Savings: <b>₹<span id="savedAmount">0</span></b>
+</div>
 </div>
 
 <div class="card">
-<h2>Add Custom Category (Total ≤15%)</h2>
-<input id="newCat" placeholder="Category name">
-<input id="newPct" type="number" placeholder="Percent">
-<button onclick="addCategory()">Add</button>
+<h2>➕ Add Custom Category</h2>
+<p class="small">Total custom categories ≤ 15%</p>
+<input id="newCat" placeholder="Category name (e.g., Transport)">
+<input id="newPct" type="number" placeholder="Percentage">
+<button onclick="addCategory()">✨ Add Category</button>
 <div id="customList"></div>
 </div>
 
 <div class="card">
-<h2>Add Expense</h2>
-<input id="amount" type="number" placeholder="Amount">
+<h2>💸 Add Expense</h2>
+<input id="amount" type="number" placeholder="Amount spent">
 <select id="category"></select>
-<button onclick="addExpense()">Add</button>
+<button onclick="addExpense()">📝 Add Expense</button>
 </div>
 
 <div class="card">
+<h2>📈 Budget Breakdown</h2>
 <canvas id="budgetChart"></canvas>
 </div>
 
-<div class="card">
+<div class="card" id="alertCard" style="display:none">
 <div id="alert" class="alert"></div>
 </div>
 
 <div class="card">
-<button style="background:#b91c1c" onclick="monthlyReset()">Monthly Reset</button>
+<button class="btn-danger" onclick="monthlyReset()">🔄 Monthly Reset</button>
 </div>
 
 </div>
 
 <script>
-let state = JSON.parse(localStorage.getItem("savequest-fixed")) || {
+let state = JSON.parse(localStorage.getItem("savequest-colorful")) || {
  income:0,
  expenses:[],
  dark:false,
@@ -115,7 +342,7 @@ let state = JSON.parse(localStorage.getItem("savequest-fixed")) || {
  lastXP:""
 };
 
-function save(){localStorage.setItem("savequest-fixed",JSON.stringify(state))}
+function save(){localStorage.setItem("savequest-colorful",JSON.stringify(state))}
 
 document.body.classList.toggle("dark",state.dark);
 
@@ -135,6 +362,8 @@ function setLock(){
  if(v>state.lock && v<=60){
    state.lock=v;
    save(); update();
+ }else{
+   alert("Lock must be higher than current and ≤60%");
  }
  lockInput.value="";
 }
@@ -144,7 +373,7 @@ function addCategory(){
  let used=Object.values(state.custom).reduce((a,b)=>a+b,0);
  let savingsAfter = state.base.Savings - used - p;
  if(!newCat.value || p<=0 || used+p>15 || savingsAfter < state.lock){
-   alert("Savings lock violated or limit exceeded");
+   alert("❌ Savings lock violated or 15% limit exceeded!");
    return;
  }
  state.custom[newCat.value]=p;
@@ -173,14 +402,14 @@ function giveXP(){
 }
 
 function getLevel(){
- if(state.xp>=250) return "Finance Pro";
- if(state.xp>=120) return "Smart Saver";
- if(state.xp>=50) return "Planner";
- return "Beginner";
+ if(state.xp>=250) return "🏆 Finance Pro";
+ if(state.xp>=120) return "💎 Smart Saver";
+ if(state.xp>=50) return "📊 Planner";
+ return "🌱 Beginner";
 }
 
 function monthlyReset(){
- if(!confirm("Reset all expenses for new month?")) return;
+ if(!confirm("🔄 Reset all expenses for new month?")) return;
  state.expenses=[];
  save(); update();
 }
@@ -204,12 +433,11 @@ function update(){
    used+=state.custom[c];
    customList.innerHTML+=`
      <div class="catRow">
-       <span>${c} (${state.custom[c]}%)</span>
-       <button onclick="deleteCat('${c}')">Delete</button>
+       <span><b>${c}</b> (${state.custom[c]}%)</span>
+       <button class="btn-danger" onclick="deleteCat('${c}')">🗑️ Delete</button>
      </div>`;
  }
 
- // ✅ CORRECT SAVINGS LOGIC
  let savingsAfterCustom = budget.Savings - used;
  if(savingsAfterCustom < state.lock){
    savingsAfterCustom = state.lock;
@@ -231,17 +459,47 @@ function update(){
 
 function drawBudget(b){
  if(window.bChart) bChart.destroy();
+ 
+ const colors = [
+   'rgba(239, 68, 68, 0.8)',   // Red
+   'rgba(249, 115, 22, 0.8)',  // Orange
+   'rgba(245, 158, 11, 0.8)',  // Amber
+   'rgba(34, 197, 94, 0.8)',   // Green
+   'rgba(59, 130, 246, 0.8)',  // Blue
+   'rgba(139, 92, 246, 0.8)',  // Purple
+   'rgba(236, 72, 153, 0.8)'   // Pink
+ ];
+ 
  bChart=new Chart(budgetChart,{
    type:"bar",
    data:{
      labels:Object.keys(b),
      datasets:[{
-       data:Object.values(b).map(p=>state.income*p/100)
+       data:Object.values(b).map(p=>state.income*p/100),
+       backgroundColor:colors,
+       borderRadius:8,
+       borderWidth:2,
+       borderColor:'rgba(255,255,255,0.3)'
      }]
    },
    options:{
-     plugins:{legend:{display:false}},
-     scales:{y:{beginAtZero:true}}
+     plugins:{
+       legend:{display:false},
+       tooltip:{
+         backgroundColor:'rgba(0,0,0,0.8)',
+         padding:12,
+         cornerRadius:8
+       }
+     },
+     scales:{
+       y:{
+         beginAtZero:true,
+         grid:{color:'rgba(0,0,0,0.05)'}
+       },
+       x:{
+         grid:{display:false}
+       }
+     }
    }
  });
 }
@@ -253,8 +511,30 @@ function drawSavings(pct){
  if(window.sChart) sChart.destroy();
  sChart=new Chart(savingsRing,{
    type:"doughnut",
-   data:{datasets:[{data:[target,state.income-target]}]},
-   options:{cutout:"70%"}
+   data:{
+     labels:['Savings','Other'],
+     datasets:[{
+       data:[target,state.income-target],
+       backgroundColor:[
+         'rgba(16, 185, 129, 0.8)',
+         'rgba(148, 163, 184, 0.3)'
+       ],
+       borderWidth:3,
+       borderColor:'#ffffff'
+     }]
+   },
+   options:{
+     cutout:"70%",
+     plugins:{
+       legend:{
+         position:'bottom',
+         labels:{
+           padding:15,
+           font:{size:13}
+         }
+       }
+     }
+   }
  });
 }
 
