@@ -3,38 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CashFlow Capitals</title>
+<title>CashFlow Compass</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
-  --bg:#f0f9ff;
-  --card:#ffffff;
-  --text:#0f172a;
   --primary:#6366f1;
   --accent:#8b5cf6;
-  --success:#22c55e;
-  --danger:#ef4444;
-  --shadow:rgba(99,102,241,0.2);
+  --bg1:#e0f2fe;
+  --bg2:#fdf4ff;
+  --card:#ffffff;
+  --text:#0f172a;
+  --shadow:rgba(99,102,241,0.25);
 }
 
 body{
   margin:0;
   font-family:Inter,system-ui;
-  background:linear-gradient(135deg,#e0f2fe,#fdf4ff);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
   color:var(--text);
 }
 
 header{
-  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:white;
   text-align:center;
-  padding:24px;
+  padding:26px;
 }
 
 .container{
-  max-width:520px;
+  max-width:540px;
   margin:auto;
   padding:16px;
 }
@@ -44,11 +43,11 @@ header{
   border-radius:18px;
   padding:16px;
   margin-bottom:16px;
-  box-shadow:0 12px 30px var(--shadow);
+  box-shadow:0 14px 32px var(--shadow);
 }
 
 h2{
-  margin:0 0 12px;
+  margin-bottom:10px;
   font-size:18px;
   background:linear-gradient(135deg,var(--primary),var(--accent));
   -webkit-background-clip:text;
@@ -71,9 +70,6 @@ button{
   font-weight:600;
 }
 
-.small{font-size:13px;opacity:0.85}
-.hidden{display:none}
-
 .mode{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -85,6 +81,7 @@ button{
   border-radius:10px;
   border:2px solid #e5e7eb;
   text-align:center;
+  cursor:pointer;
 }
 
 .mode .active{
@@ -93,17 +90,15 @@ button{
   border:none;
 }
 
-.result-box{
+.hidden{display:none}
+.small{font-size:13px;opacity:.85}
+
+.result{
   margin-top:12px;
   padding:14px;
   border-radius:14px;
   background:linear-gradient(135deg,#22c55e,#16a34a);
   color:white;
-}
-
-.big{
-  font-size:26px;
-  font-weight:800;
 }
 </style>
 </head>
@@ -111,54 +106,69 @@ button{
 <body>
 
 <header>
-<h1>💰 CashFlow Capitals</h1>
-<p>Plan your future money smartly</p>
+<h1>💰 CashFlow Compass</h1>
+<p>Competition-Ready Smart Money Planner</p>
 </header>
 
 <div class="container">
 
 <!-- MODE -->
 <div class="card">
-<h2>🎯 Choose Mode</h2>
+<h2>🎯 Select Planning Mode</h2>
+<p class="small">
+Regular Mode is for monthly income.  
+Future Mode is for planning big goals.
+</p>
 <div class="mode">
   <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
-  <div id="irrBtn" onclick="setMode('irregular')">Irregular / Future</div>
+  <div id="futBtn" onclick="setMode('future')">Future Planning</div>
 </div>
 </div>
 
 <!-- REGULAR MODE -->
 <div id="regular" class="hidden">
-  <div class="card">
-    <h2>💼 Regular Mode</h2>
-    <p class="small">This mode is under expansion.</p>
-  </div>
+
+<div class="card">
+<h2>💵 Monthly Income</h2>
+<input id="regIncome" type="number" placeholder="Enter monthly income (₹)">
+<button onclick="calculateRegular()">Calculate Budget</button>
 </div>
 
-<!-- IRREGULAR MODE -->
-<div id="irregular" class="hidden">
-
-  <div class="card">
-    <h2>💰 Future Money Overview</h2>
-    <input id="futureMoney" type="number" placeholder="Total money you’ll have (₹)">
-    <input id="futureYears" type="number" placeholder="In how many years?">
-  </div>
-
-  <div class="card">
-    <h2>🛒 Plan a Future Purchase</h2>
-    <p class="small">
-      We calculate how much you should save and how much you can safely spend
-      every month — with category-wise guidance.
-    </p>
-
-    <input id="itemName" placeholder="Item name (e.g. Laptop)">
-    <input id="itemCost" type="number" placeholder="Item cost (₹)">
-    <button onclick="recommendPlan()">📊 Get Recommendation</button>
-
-    <div id="planResult"></div>
-    <canvas id="spendChart" style="margin-top:16px"></canvas>
-  </div>
+<div class="card">
+<h2>📊 Monthly Budget Recommendation</h2>
+<p class="small">
+Based on a balanced financial rule used by financial advisors.
+</p>
+<canvas id="regularChart"></canvas>
+<div id="regularText"></div>
+</div>
 
 </div>
+
+<!-- FUTURE MODE -->
+<div id="future" class="hidden">
+
+<div class="card">
+<h2>📆 Future Money</h2>
+<input id="futureMoney" type="number" placeholder="Total money you will have (₹)">
+<input id="futureYears" type="number" placeholder="In how many years?">
+</div>
+
+<div class="card">
+<h2>🎯 Future Goal</h2>
+<input id="goalName" placeholder="Goal (e.g. Laptop)">
+<input id="goalCost" type="number" placeholder="Goal cost (₹)">
+<button onclick="calculateFuture()">Get Plan</button>
+</div>
+
+<div class="card">
+<h2>📊 Monthly Spending Plan</h2>
+<canvas id="futureChart"></canvas>
+<div id="futureText"></div>
+</div>
+
+</div>
+
 </div>
 
 <script>
@@ -168,87 +178,91 @@ function save(){localStorage.setItem("cfc",JSON.stringify(state));}
 function setMode(m){
   state.mode=m; save();
   regular.classList.toggle("hidden",m!=="regular");
-  irregular.classList.toggle("hidden",m!=="irregular");
+  future.classList.toggle("hidden",m!=="future");
   regBtn.classList.toggle("active",m==="regular");
-  irrBtn.classList.toggle("active",m==="irregular");
+  futBtn.classList.toggle("active",m==="future");
 }
 if(state.mode) setMode(state.mode);
 
-let spendChart;
+let regChart, futChart;
 
-function recommendPlan(){
+/* REGULAR MODE LOGIC */
+function calculateRegular(){
+  let income = +regIncome.value;
+  if(income<=0){alert("Enter valid income");return;}
+
+  let food = income*0.35;
+  let shopping = income*0.20;
+  let entertainment = income*0.15;
+  let savings = income*0.20;
+  let other = income*0.10;
+
+  if(regChart) regChart.destroy();
+  regChart = new Chart(regularChart,{
+    type:"doughnut",
+    data:{
+      labels:["Food","Shopping","Entertainment","Savings","Other"],
+      datasets:[{
+        data:[
+          food,shopping,entertainment,savings,other
+        ],
+        backgroundColor:[
+          "#22c55e","#3b82f6","#a855f7","#10b981","#f97316"
+        ]
+      }]
+    },
+    options:{cutout:"65%",plugins:{legend:{position:"bottom"}}}
+  });
+
+  regularText.innerHTML=`
+  <div class="result">
+    <p>💾 Savings per month: <b>₹${Math.round(savings)}</b></p>
+    <p>📅 Daily spending limit: <b>₹${Math.round((income-savings)/30)}</b></p>
+  </div>`;
+}
+
+/* FUTURE MODE LOGIC */
+function calculateFuture(){
   let total = +futureMoney.value;
   let years = +futureYears.value;
-  let item = itemName.value;
-  let cost = +itemCost.value;
+  let cost = +goalCost.value;
+  let name = goalName.value;
 
-  if(total<=0 || years<=0 || cost<=0 || !item){
-    alert("Fill all fields correctly!");
+  if(total<=0||years<=0||cost<=0||!name){
+    alert("Fill all fields");return;
+  }
+
+  let months = years*12;
+  let monthlyMoney = total/months;
+  let save = cost/months;
+  let spend = monthlyMoney-save;
+
+  if(spend<0){
+    futureText.innerHTML="<div class='result'>⚠️ Goal not feasible</div>";
     return;
   }
 
-  let months = years * 12;
-  let monthlyMoney = total / months;
-  let monthlySave = cost / months;
-  let monthlySpend = monthlyMoney - monthlySave;
+  let food=spend*0.40, shop=spend*0.25, ent=spend*0.20, other=spend*0.15;
 
-  if(monthlySpend < 0){
-    planResult.innerHTML = `
-      <div class="result-box">
-        <b>⚠️ Not feasible</b>
-        <p>Your future money is not enough.</p>
-      </div>`;
-    return;
-  }
-
-  // CATEGORY SPLIT
-  let food = monthlySpend * 0.40;
-  let shopping = monthlySpend * 0.25;
-  let entertainment = monthlySpend * 0.20;
-  let other = monthlySpend * 0.15;
-
-  planResult.innerHTML = `
-    <div class="result-box">
-      <h3>🛍️ ${item}</h3>
-      <p>💰 Monthly money: <b>₹${Math.floor(monthlyMoney)}</b></p>
-      <p>💾 Save per month: <b>₹${Math.ceil(monthlySave)}</b></p>
-      <p>🧾 Spend per month: <b>₹${Math.floor(monthlySpend)}</b></p>
-      <p class="small">
-        Save first, then spend the rest using the chart below.
-      </p>
-    </div>
-  `;
-
-  if(spendChart) spendChart.destroy();
-
-  spendChart = new Chart(document.getElementById("spendChart"),{
+  if(futChart) futChart.destroy();
+  futChart = new Chart(futureChart,{
     type:"doughnut",
     data:{
       labels:["Food","Shopping","Entertainment","Other"],
       datasets:[{
-        data:[
-          Math.round(food),
-          Math.round(shopping),
-          Math.round(entertainment),
-          Math.round(other)
-        ],
-        backgroundColor:[
-          "rgba(34,197,94,0.8)",
-          "rgba(59,130,246,0.8)",
-          "rgba(168,85,247,0.8)",
-          "rgba(249,115,22,0.8)"
-        ],
-        borderWidth:3,
-        borderColor:"#fff"
+        data:[food,shop,ent,other],
+        backgroundColor:["#22c55e","#3b82f6","#a855f7","#f97316"]
       }]
     },
-    options:{
-      cutout:"65%",
-      plugins:{
-        legend:{position:"bottom"}
-      }
-    }
+    options:{cutout:"65%",plugins:{legend:{position:"bottom"}}}
   });
+
+  futureText.innerHTML=`
+  <div class="result">
+    <p>🎯 Goal: <b>${name}</b></p>
+    <p>💾 Save monthly: <b>₹${Math.round(save)}</b></p>
+    <p>🧾 Spend monthly: <b>₹${Math.round(spend)}</b></p>
+  </div>`;
 }
 </script>
 
