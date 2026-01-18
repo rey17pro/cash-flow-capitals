@@ -1,923 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CashFlow Capitals</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
-  --bg:#f0f9ff; 
-  --card:#ffffff; 
+  --bg:#f0f9ff;
+  --card:#ffffff;
   --text:#0f172a;
-  --primary:#3b82f6; 
+  --primary:#3b82f6;
   --accent:#8b5cf6;
   --success:#10b981;
   --danger:#ef4444;
-  --warning:#f59e0b;
-  --pink:#ec4899;
-  --input:#ffffff;
-  --shadow:rgba(59,130,246,0.1);
+  --shadow:rgba(59,130,246,0.15);
 }
-body.dark{
-  --bg:#0f172a; 
-  --card:#1e293b;
-  --text:#f1f5f9; 
-  --input:#334155;
-  --shadow:rgba(0,0,0,0.3);
-}
-
-*{box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,sans-serif}
-
 body{
   margin:0;
-  background:var(--bg);
+  font-family:Inter,system-ui;
+  background:linear-gradient(135deg,#e0f2fe,#fdf4ff);
   color:var(--text);
-  transition:background 0.3s ease;
 }
-
-body::before{
-  content:"";
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(135deg, #667eea20 0%, #764ba220 50%, #f093fb20 100%);
-  z-index:-1;
-  pointer-events:none;
-}
-
 header{
-  background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color:white;
-  padding:24px 18px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;
+  padding:24px;
   text-align:center;
-  box-shadow:0 4px 20px rgba(102,126,234,0.3);
 }
-
-header h1{
-  margin:0;
-  font-size:28px;
-  font-weight:800;
-  letter-spacing:-0.5px;
-}
-
-header p{
-  margin:8px 0 0;
-  opacity:0.95;
-  font-size:14px;
-}
-
 .container{
-  max-width:500px;
+  max-width:520px;
   margin:auto;
   padding:16px;
 }
-
 .card{
   background:var(--card);
   border-radius:16px;
-  padding:18px;
+  padding:16px;
   margin-bottom:16px;
-  box-shadow:0 4px 20px var(--shadow);
-  border:1px solid rgba(255,255,255,0.1);
-  transition:transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow:0 10px 30px var(--shadow);
 }
-
-.card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 30px var(--shadow);
-}
-
 h2{
-  font-size:18px;
   margin:0 0 12px;
-  font-weight:700;
-  background:linear-gradient(135deg, var(--primary), var(--accent));
+  font-size:18px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  background-clip:text;
 }
-
-input,select,button,textarea{
+input,select,button{
   width:100%;
-  padding:12px 14px;
+  padding:12px;
   margin-top:8px;
   border-radius:10px;
-  border:2px solid #e2e8f0;
-  background:var(--input);
-  color:var(--text);
+  border:2px solid #e5e7eb;
   font-size:14px;
-  transition:all 0.2s ease;
 }
-
-input:focus,select:focus,textarea:focus{
-  outline:none;
-  border-color:var(--primary);
-  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
-}
-
 button{
-  background:linear-gradient(135deg, var(--primary), var(--accent));
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:white;
   border:none;
   font-weight:600;
-  cursor:pointer;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-  font-size:13px;
 }
-
-button:hover{
-  transform:translateY(-1px);
-  box-shadow:0 4px 12px rgba(59,130,246,0.4);
-}
-
-button:active{
-  transform:translateY(0);
-}
-
-.btn-dark{
-  background:linear-gradient(135deg, #1e293b, #334155);
-}
-
-.btn-danger{
-  background:linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-.btn-success{
-  background:linear-gradient(135deg, #10b981, #059669);
-}
-
-.btn-warning{
-  background:linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.small{
-  font-size:13px;
-  opacity:0.85;
-}
-
-.alert{
-  color:var(--danger);
-  font-weight:600;
-  padding:12px;
-  background:rgba(239,68,68,0.1);
-  border-radius:8px;
-  border-left:4px solid var(--danger);
-}
-
-.lock{
-  color:var(--success);
-  font-weight:600;
-  padding:12px;
-  background:rgba(16,185,129,0.1);
-  border-radius:8px;
-  border-left:4px solid var(--success);
-  margin-bottom:8px;
-}
-
-.dashboard-grid{
-  display:grid;
-  gap:12px;
-  margin-top:10px;
-}
-
-.stat-box{
-  padding:14px;
-  border-radius:10px;
-  font-size:14px;
-}
-
-.stat-box.balance{
-  background:linear-gradient(135deg, #10b981, #059669);
-  color:white;
-}
-
-.stat-box.daily{
-  background:linear-gradient(135deg, #f59e0b, #d97706);
-  color:white;
-}
-
-.stat-box.xp{
-  background:linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color:white;
-}
-
-.stat-box b{
-  display:block;
-  font-size:22px;
-  margin-top:4px;
-}
-
-.catRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:8px;
-  padding:10px;
-  background:rgba(139,92,246,0.05);
-  border-radius:8px;
-  border-left:3px solid var(--accent);
-}
-
-.catRow button{
-  width:auto;
-  padding:6px 12px;
-  margin:0;
-  font-size:12px;
-}
-
-.savings-target{
-  text-align:center;
+.small{font-size:13px;opacity:0.85}
+.result-box{
   margin-top:12px;
-  padding:12px;
-  background:rgba(16,185,129,0.1);
-  border-radius:8px;
+  padding:14px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
 }
-
-.savings-target b{
-  font-size:24px;
-  color:var(--success);
+.big{
+  font-size:26px;
+  font-weight:800;
 }
-
-.mode-toggle{
+.hidden{display:none}
+.mode{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
-  margin-top:10px;
 }
-
-.mode-btn{
+.mode div{
   padding:12px;
+  text-align:center;
   border-radius:10px;
-  border:2px solid #e2e8f0;
-  background:var(--input);
-  cursor:pointer;
-  transition:all 0.2s;
-  text-align:center;
+  border:2px solid #e5e7eb;
 }
-
-.mode-btn:hover{
-  border-color:var(--primary);
-}
-
-.mode-btn.active{
-  background:linear-gradient(135deg, var(--primary), var(--accent));
+.mode .active{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:white;
-  border-color:transparent;
-}
-
-.result-box{
-  padding:16px;
-  background:linear-gradient(135deg, #ec4899, #d946ef);
-  color:white;
-  border-radius:12px;
-  margin-top:12px;
-  text-align:center;
-}
-
-.result-box h3{
-  margin:0 0 8px;
-  font-size:16px;
-}
-
-.result-box .big-number{
-  font-size:32px;
-  font-weight:800;
-  margin:8px 0;
-}
-
-.hidden{
-  display:none;
-}
-
-.goal-item{
-  padding:12px;
-  background:rgba(139,92,246,0.05);
-  border-radius:8px;
-  margin-top:8px;
-  border-left:3px solid var(--accent);
-}
-
-.goal-item h4{
-  margin:0 0 6px;
-  color:var(--accent);
-}
-
-.goal-item .progress-bar{
-  height:8px;
-  background:#e2e8f0;
-  border-radius:4px;
-  overflow:hidden;
-  margin-top:8px;
-}
-
-.goal-item .progress-fill{
-  height:100%;
-  background:linear-gradient(135deg, var(--success), #059669);
-  transition:width 0.3s;
+  border:none;
 }
 </style>
 </head>
 
 <body>
+
 <header>
 <h1>💰 CashFlow Capitals</h1>
-<p>Smart Money Management for Everyone</p>
+<p>Plan • Save • Spend Smart</p>
 </header>
 
 <div class="container">
 
+<!-- MODE SELECT -->
 <div class="card">
-<button class="btn-dark" onclick="toggleDark()">🌓 Toggle Dark Mode</button>
-</div>
-
-<!-- MODE SELECTOR -->
-<div class="card">
-<h2>🎯 Choose Your Mode</h2>
-<div class="mode-toggle">
-  <div class="mode-btn" id="regularBtn" onclick="setMode('regular')">
-    💼 Regular Income<br><span class="small">(Job/Allowance)</span>
-  </div>
-  <div class="mode-btn" id="irregularBtn" onclick="setMode('irregular')">
-    🎁 Irregular Income<br><span class="small">(Gifts/Pocket Money)</span>
-  </div>
+<h2>🎯 Choose Mode</h2>
+<div class="mode">
+  <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
+  <div id="irrBtn" onclick="setMode('irregular')">Irregular Income</div>
 </div>
 </div>
 
-<!-- REGULAR INCOME MODE -->
-<div id="regularMode" class="hidden">
+<!-- REGULAR MODE -->
+<div id="regular" class="hidden">
   <div class="card">
-  <h2>💵 Monthly Income</h2>
-  <input id="income" type="number" placeholder="Enter your monthly income">
-  <button onclick="setup()">💾 Save Income</button>
-  </div>
-
-  <div class="card">
-  <h2>📊 Dashboard</h2>
-  <div class="dashboard-grid">
-    <div class="stat-box balance">
-      Balance
-      <b>₹<span id="balance">0</span></b>
-    </div>
-    <div class="stat-box daily">
-      Daily Limit
-      <b>₹<span id="daily">0</span></b>
-    </div>
-    <div class="stat-box xp">
-      XP: <span id="xp">0</span>
-      <b id="level">Beginner</b>
-    </div>
-  </div>
-  </div>
-
-  <div class="card">
-  <h2>🔒 Savings Lock</h2>
-  <div class="lock">🛡️ Minimum Savings: <b id="lockVal">40</b>%</div>
-  <input id="lockInput" type="number" placeholder="Increase lock % (max 60%)">
-  <button class="btn-success" onclick="setLock()">🔐 Increase Lock</button>
-  </div>
-
-  <div class="card">
-  <h2>🎯 Savings Goal</h2>
-  <canvas id="savingsRing"></canvas>
-  <div class="savings-target">
-    Target Savings: <b>₹<span id="savedAmount">0</span></b>
-  </div>
-  </div>
-
-  <div class="card">
-  <h2>➕ Add Custom Category</h2>
-  <p class="small">Total custom categories ≤ 15%</p>
-  <input id="newCat" placeholder="Category name (e.g., Transport)">
-  <input id="newPct" type="number" placeholder="Percentage">
-  <button onclick="addCategory()">✨ Add Category</button>
-  <div id="customList"></div>
-  </div>
-
-  <div class="card">
-  <h2>💸 Add Expense</h2>
-  <input id="amount" type="number" placeholder="Amount spent">
-  <select id="category"></select>
-  <button onclick="addExpense()">📝 Add Expense</button>
-  </div>
-
-  <div class="card">
-  <h2>📈 Budget Breakdown</h2>
-  <canvas id="budgetChart"></canvas>
-  </div>
-
-  <div class="card">
-  <button class="btn-danger" onclick="monthlyReset()">🔄 Monthly Reset</button>
+    <h2>💵 Monthly Income</h2>
+    <input id="income" type="number" placeholder="Enter monthly income"/>
+    <button onclick="saveIncome()">Save</button>
   </div>
 </div>
 
-<!-- IRREGULAR INCOME MODE -->
-<div id="irregularMode" class="hidden">
+<!-- IRREGULAR MODE -->
+<div id="irregular" class="hidden">
 
   <div class="card">
-  <h2>🎁 Add Money Received</h2>
-  <input id="irregularAmount" type="number" placeholder="Amount received (₹)">
-  <input id="irregularSource" placeholder="Source (e.g., Birthday, Diwali)">
-  <button class="btn-success" onclick="addIrregularIncome()">➕ Add Money</button>
-
-  <div class="savings-target" style="margin-top:16px">
-    Total Savings: <b>₹<span id="totalSavings">0</span></b>
-  </div>
+    <h2>💰 Total Future Money</h2>
+    <input id="futureMoney" type="number" placeholder="Money you’ll have in future (₹)">
+    <input id="futureYears" type="number" placeholder="In how many years?">
   </div>
 
   <div class="card">
-  <h2>🎯 Savings Goal Calculator</h2>
-  <p class="small">Plan for your dream purchase!</p>
+    <h2>🛒 Plan a Future Purchase</h2>
+    <p class="small">
+      We’ll recommend how much you can spend monthly
+      while saving for this item.
+    </p>
 
-  <input id="goalName" placeholder="What do you want to buy? (e.g., PS5)">
-  <input id="goalAmount" type="number" placeholder="How much does it cost? (₹)">
-  <input id="monthlyContribution" type="number" placeholder="How much can you save per month? (₹)">
+    <input id="itemName" placeholder="Item name (e.g. Laptop)">
+    <input id="itemCost" type="number" placeholder="Item cost (₹)">
+    <button onclick="recommendPlan()">📊 Get Recommendation</button>
 
-  <button class="btn-warning" onclick="calculateGoal()">🧮 Calculate</button>
-
-  <div id="goalResult"></div>
+    <div id="planResult"></div>
   </div>
 
-  <div class="card">
-  <h2>💰 Future Savings Calculator</h2>
-  <p class="small">See how much you'll save over time</p>
-
-  <input id="savingsPerMonth" type="number" placeholder="Monthly savings (₹)">
-  <input id="timeYears" type="number" placeholder="Number of years">
-
-  <button onclick="calculateFuture()">📊 Calculate Future Value</button>
-
-  <div id="futureResult"></div>
-  </div>
-
-  <div class="card">
-  <h2>📋 Your Savings Goals</h2>
-  <div id="goalsList"></div>
-  <p class="small" id="noGoals">No active goals yet. Add one above!</p>
-  </div>
-
-  <div class="card">
-  <h2>💸 Track Expenses</h2>
-  <input id="expenseAmount" type="number" placeholder="Amount spent (₹)">
-  <input id="expenseNote" placeholder="What did you buy?">
-  <button class="btn-danger" onclick="addIrregularExpense()">➖ Record Expense</button>
-  </div>
-
-  <div class="card">
-  <h2>📊 Savings Progress</h2>
-  <canvas id="irregularChart"></canvas>
-  </div>
-
-  <div class="card">
-  <button class="btn-danger" onclick="resetIrregular()">🗑️ Reset All Data</button>
-  </div>
 </div>
 
 </div>
 
 <script>
-let state = JSON.parse(localStorage.getItem("cashflow-capitals")) || {
- mode: null,
- // Regular mode data
- income:0,
- expenses:[],
- dark:false,
- base:{Food:30,Shopping:10,Entertainment:10,Savings:50},
- custom:{},
- lock:40,
- xp:0,
- lastXP:"",
- // Irregular mode data
- totalSavings:0,
- incomeHistory:[],
- expenseHistory:[],
- goals:[]
-};
+let state = JSON.parse(localStorage.getItem("cfc-app")) || {mode:null,income:0};
 
-function save(){localStorage.setItem("cashflow-capitals",JSON.stringify(state))}
+function save(){localStorage.setItem("cfc-app",JSON.stringify(state));}
 
-document.body.classList.toggle("dark",state.dark);
-
-function toggleDark(){
- state.dark=!state.dark;
- document.body.classList.toggle("dark");
- save();
+function setMode(m){
+  state.mode=m; save();
+  document.getElementById("regular").classList.toggle("hidden",m!=="regular");
+  document.getElementById("irregular").classList.toggle("hidden",m!=="irregular");
+  document.getElementById("regBtn").classList.toggle("active",m==="regular");
+  document.getElementById("irrBtn").classList.toggle("active",m==="irregular");
 }
 
-function setMode(mode){
- state.mode = mode;
- document.getElementById("regularBtn").classList.toggle("active", mode==="regular");
- document.getElementById("irregularBtn").classList.toggle("active", mode==="irregular");
- document.getElementById("regularMode").classList.toggle("hidden", mode!=="regular");
- document.getElementById("irregularMode").classList.toggle("hidden", mode!=="irregular");
- save();
- if(mode==="regular") update();
- else updateIrregular();
-}
+if(state.mode) setMode(state.mode);
 
-// Initialize mode
-if(state.mode){
-  setMode(state.mode);
-}
-
-// ========== REGULAR MODE FUNCTIONS ==========
-function setup(){
- state.income=+income.value;
- save(); update();
-}
-
-function setLock(){
- let v=+lockInput.value;
- if(v>state.lock && v<=60){
-   state.lock=v;
-   save(); update();
- }else{
-   alert("Lock must be higher than current and ≤60%");
- }
- lockInput.value="";
-}
-
-function addCategory(){
- let p=+newPct.value;
- let used=Object.values(state.custom).reduce((a,b)=>a+b,0);
- let savingsAfter = state.base.Savings - used - p;
- if(!newCat.value || p<=0 || used+p>15 || savingsAfter < state.lock){
-   alert("❌ Savings lock violated or 15% limit exceeded!");
-   return;
- }
- state.custom[newCat.value]=p;
- newCat.value=""; newPct.value="";
- save(); update();
-}
-
-function deleteCat(c){
- delete state.custom[c];
- save(); update();
-}
-
-function addExpense(){
- if(amount.value<=0) return;
- state.expenses.push({amount:+amount.value,cat:category.value});
- giveXP();
- amount.value="";
- save(); update();
-}
-
-function giveXP(){
- let today=new Date().toDateString();
- if(state.lastXP===today) return;
- state.xp+=5;
- state.lastXP=today;
-}
-
-function getLevel(){
- if(state.xp>=250) return "🏆 Finance Pro";
- if(state.xp>=120) return "💎 Smart Saver";
- if(state.xp>=50) return "📊 Planner";
- return "🌱 Beginner";
-}
-
-function monthlyReset(){
- if(!confirm("🔄 Reset all expenses for new month?")) return;
- state.expenses=[];
- save(); update();
-}
-
-function update(){
- income.value=state.income;
- lockVal.innerText=state.lock;
- xp.innerText=state.xp;
- level.innerText=getLevel();
-
- let spent=state.expenses.reduce((a,b)=>a+b.amount,0);
- balance.innerText=state.income-spent;
- daily.innerText=Math.floor((state.income-spent)/30);
-
- let budget={...state.base};
- let used=0;
-
- customList.innerHTML="";
- for(let c in state.custom){
-   budget[c]=state.custom[c];
-   used+=state.custom[c];
-   customList.innerHTML+=`
-     <div class="catRow">
-       <span><b>${c}</b> (${state.custom[c]}%)</span>
-       <button class="btn-danger" onclick="deleteCat('${c}')">🗑️ Delete</button>
-     </div>`;
- }
-
- let savingsAfterCustom = budget.Savings - used;
- if(savingsAfterCustom < state.lock){
-   savingsAfterCustom = state.lock;
- }
- budget.Savings = savingsAfterCustom;
-
- category.innerHTML="";
- Object.keys(budget).forEach(c=>{
-   if(c!=="Savings"){
-     let o=document.createElement("option");
-     o.text=c;
-     category.add(o);
-   }
- });
-
- drawBudget(budget);
- drawSavings(budget.Savings);
-}
-
-function drawBudget(b){
- if(window.bChart) bChart.destroy();
-
- const colors = [
-   'rgba(239, 68, 68, 0.8)',
-   'rgba(249, 115, 22, 0.8)',
-   'rgba(245, 158, 11, 0.8)',
-   'rgba(34, 197, 94, 0.8)',
-   'rgba(59, 130, 246, 0.8)',
-   'rgba(139, 92, 246, 0.8)',
-   'rgba(236, 72, 153, 0.8)'
- ];
-
- bChart=new Chart(budgetChart,{
-   type:"bar",
-   data:{
-     labels:Object.keys(b),
-     datasets:[{
-       data:Object.values(b).map(p=>state.income*p/100),
-       backgroundColor:colors,
-       borderRadius:8,
-       borderWidth:2,
-       borderColor:'rgba(255,255,255,0.3)'
-     }]
-   },
-   options:{
-     plugins:{
-       legend:{display:false},
-       tooltip:{
-         backgroundColor:'rgba(0,0,0,0.8)',
-         padding:12,
-         cornerRadius:8
-       }
-     },
-     scales:{
-       y:{
-         beginAtZero:true,
-         grid:{color:'rgba(0,0,0,0.05)'}
-       },
-       x:{
-         grid:{display:false}
-       }
-     }
-   }
- });
-}
-
-function drawSavings(pct){
- let target = state.income * pct / 100;
- savedAmount.innerText = Math.round(target);
-
- if(window.sChart) sChart.destroy();
- sChart=new Chart(savingsRing,{
-   type:"doughnut",
-   data:{
-     labels:['Savings','Other'],
-     datasets:[{
-       data:[target,state.income-target],
-       backgroundColor:[
-         'rgba(16, 185, 129, 0.8)',
-         'rgba(148, 163, 184, 0.3)'
-       ],
-       borderWidth:3,
-       borderColor:'#ffffff'
-     }]
-   },
-   options:{
-     cutout:"70%",
-     plugins:{
-       legend:{
-         position:'bottom',
-         labels:{
-           padding:15,
-           font:{size:13}
-         }
-       }
-     }
-   }
- });
-}
-
-// ========== IRREGULAR MODE FUNCTIONS ==========
-function addIrregularIncome(){
-  let amt = +irregularAmount.value;
-  let src = irregularSource.value || "Other";
-  if(amt<=0) return;
-
-  state.totalSavings += amt;
-  state.incomeHistory.push({
-    amount: amt,
-    source: src,
-    date: new Date().toLocaleDateString()
-  });
-
-  irregularAmount.value = "";
-  irregularSource.value = "";
+function saveIncome(){
+  state.income=+income.value;
   save();
-  updateIrregular();
+  alert("Income saved!");
 }
 
-function addIrregularExpense(){
-  let amt = +expenseAmount.value;
-  let note = expenseNote.value || "Expense";
-  if(amt<=0 || amt>state.totalSavings){
-    alert("Invalid amount or insufficient savings!");
+/* ⭐ YOUR REQUESTED FEATURE ⭐ */
+function recommendPlan(){
+  let total = +futureMoney.value;
+  let years = +futureYears.value;
+  let item = itemName.value;
+  let cost = +itemCost.value;
+
+  if(total<=0 || years<=0 || cost<=0 || !item){
+    alert("Fill all fields correctly!");
     return;
   }
 
-  state.totalSavings -= amt;
-  state.expenseHistory.push({
-    amount: amt,
-    note: note,
-    date: new Date().toLocaleDateString()
-  });
+  let months = years*12;
+  let monthlyMoney = total / months;
+  let monthlySave = cost / months;
+  let monthlySpend = monthlyMoney - monthlySave;
 
-  expenseAmount.value = "";
-  expenseNote.value = "";
-  save();
-  updateIrregular();
-}
-
-function calculateGoal(){
-  let name = goalName.value;
-  let cost = +goalAmount.value;
-  let monthly = +monthlyContribution.value;
-
-  if(!name || cost<=0 || monthly<=0){
-    alert("Please fill all fields!");
+  if(monthlySpend < 0){
+    planResult.innerHTML = `
+      <div class="result-box">
+        <b>⚠️ Not possible</b>
+        <p>You won’t have enough money to buy ${item}.</p>
+      </div>`;
     return;
   }
 
-  let months = Math.ceil(cost / monthly);
-  let years = Math.floor(months / 12);
-  let remainMonths = months % 12;
-
-  let timeStr = years > 0 ? `${years} year(s) and ${remainMonths} month(s)` : `${months} month(s)`;
-
-  // Add to goals list
-  state.goals.push({
-    name: name,
-    cost: cost,
-    monthly: monthly,
-    saved: 0,
-    created: new Date().toLocaleDateString()
-  });
-
-  document.getElementById("goalResult").innerHTML = `
+  planResult.innerHTML = `
     <div class="result-box">
-      <h3>🎯 ${name}</h3>
-      <div class="big-number">₹${cost.toLocaleString()}</div>
-      <p>Saving ₹${monthly}/month</p>
-      <p>⏰ Time needed: <b>${timeStr}</b></p>
-      <p>📅 Target date: ${new Date(Date.now() + months*30*24*60*60*1000).toLocaleDateString()}</p>
-    </div>
-  `;
+      <h3>🛍️ ${item}</h3>
+      <p>Total money in ${years} years:</p>
+      <div class="big">₹${total.toLocaleString()}</div>
 
-  goalName.value = "";
-  goalAmount.value = "";
-  monthlyContribution.value = "";
+      <hr style="opacity:0.4">
 
-  save();
-  updateIrregular();
-}
+      <p>💾 Save per month:</p>
+      <div class="big">₹${Math.ceil(monthlySave)}</div>
 
-function calculateFuture(){
-  let monthly = +savingsPerMonth.value;
-  let years = +timeYears.value;
+      <p>🧾 Spend per month:</p>
+      <div class="big">₹${Math.floor(monthlySpend)}</div>
 
-  if(monthly<=0 || years<=0){
-    alert("Please enter valid values!");
-    return;
-  }
-
-  let months = years * 12;
-  let total = monthly * months;
-
-  document.getElementById("futureResult").innerHTML = `
-    <div class="result-box">
-      <h3>💰 Future Savings</h3>
-      <div class="big-number">₹${total.toLocaleString()}</div>
-      <p>In ${years} year(s)</p>
-      <p>💵 Saving ₹${monthly}/month</p>
-      <p>📊 Total months: ${months}</p>
+      <p class="small">
+        Save first, then spend the rest.
+        This way you can buy <b>${item}</b> safely.
+      </p>
     </div>
   `;
 }
-
-function updateGoalProgress(index, amount){
-  state.goals[index].saved += amount;
-  if(state.goals[index].saved > state.goals[index].cost){
-    state.goals[index].saved = state.goals[index].cost;
-  }
-  save();
-  updateIrregular();
-}
-
-function deleteGoal(index){
-  if(confirm("Delete this goal?")){
-    state.goals.splice(index, 1);
-    save();
-    updateIrregular();
-  }
-}
-
-function resetIrregular(){
-  if(!confirm("⚠️ This will delete all your savings data!")){
-    return;
-  }
-  state.totalSavings = 0;
-  state.incomeHistory = [];
-  state.expenseHistory = [];
-  state.goals = [];
-  save();
-  updateIrregular();
-}
-
-function updateIrregular(){
-  document.getElementById("totalSavings").innerText = state.totalSavings.toLocaleString();
-
-  // Update goals list
-  let goalsList = document.getElementById("goalsList");
-  let noGoals = document.getElementById("noGoals");
-
-  if(state.goals.length === 0){
-    noGoals.style.display = "block";
-    goalsList.innerHTML = "";
-  } else {
-    noGoals.style.display = "none";
-    goalsList.innerHTML = state.goals.map((g, i) => {
-      let progress = (g.saved / g.cost * 100).toFixed(1);
-      let remaining = g.cost - g.saved;
-      return `
-        <div class="goal-item">
-          <h4>🎯 ${g.name}</h4>
-          <p><b>₹${g.cost.toLocaleString()}</b> | ₹${g.monthly}/month</p>
-          <p>Saved: ₹${g.saved.toLocaleString()} (${progress}%)</p>
-          <p>Remaining: ₹${remaining.toLocaleString()}</p>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:${progress}%"></div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn-success" onclick="updateGoalProgress(${i}, ${g.monthly})" style="width:auto;flex:1">➕ Add ${g.monthly}</button>
-            <button class="btn-danger" onclick="deleteGoal(${i})" style="width:auto;padding:6px 12px">🗑️</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  // Update chart
-  drawIrregularChart();
-}
-
-function drawIrregularChart(){
-  if(window.iChart) iChart.destroy();
-
-  let totalIncome = state.incomeHistory.reduce((a,b) => a+b.amount, 0);
-  let totalExpense = state.expenseHistory.reduce((a,b) => a+b.amount, 0);
-
-  iChart = new Chart(irregularChart, {
-    type: "doughnut",
-    data: {
-      labels: ['Saved', 'Spent'],
-      datasets: [{
-        data: [state.totalSavings, totalExpense],
-        backgroundColor: [
-          'rgba(16, 185, 129, 0.8)',
-          'rgba(239, 68, 68, 0.8)'
-        ],
-        borderWidth: 3,
-        borderColor: '#ffffff'
-      }]
-    },
-    options: {
-      cutout: "70%",
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            padding: 15,
-            font: {size: 13}
-          }
-        }
-      }
-    }
-  });
-}
-
-// Initialize
-if(state.mode === "regular") update();
-else if(state.mode === "irregular") updateIrregular();
 </script>
 
 </body>
