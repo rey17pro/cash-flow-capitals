@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CashFlow Capitals</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
-  --bg:#f8fafc; --card:#ffffff; --text:#0f172a;
-  --primary:#2563eb; --accent:#7c3aed;
+  --bg:#f8fafc;--card:#fff;--text:#0f172a;
+  --primary:#2563eb;--accent:#7c3aed
 }
 body.dark{
-  --bg:#020617; --card:#0f172a; --text:#e5e7eb;
+  --bg:#020617;--card:#0f172a;--text:#e5e7eb
 }
 *{box-sizing:border-box;font-family:Inter,system-ui}
 body{margin:0;background:var(--bg);color:var(--text)}
 header{
   background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;padding:20px;text-align:center
+  color:white;padding:18px;text-align:center
 }
 .container{max-width:520px;margin:auto;padding:16px}
 .card{
   background:var(--card);border-radius:14px;
   padding:16px;margin-bottom:16px;
-  box-shadow:0 6px 20px rgba(0,0,0,.08)
+  box-shadow:0 6px 20px rgba(0,0,0,.1)
 }
 button,input,select{
   width:100%;padding:12px;margin-top:8px;
@@ -34,27 +34,21 @@ button{
   background:var(--primary);color:white;
   border:none;font-weight:600;cursor:pointer
 }
+button.secondary{background:#64748b}
 button.danger{background:#dc2626}
+.hidden{display:none}
 .stat{display:flex;justify-content:space-between;margin-top:6px}
 .tip{
   background:linear-gradient(135deg,#22c55e,#16a34a);
   color:white;padding:14px;border-radius:12px
 }
-table{
-  width:100%;border-collapse:collapse;margin-top:10px
-}
-th,td{
-  padding:8px;border-bottom:1px solid #cbd5f5;
-  text-align:left
-}
-th{font-weight:600}
 </style>
 </head>
 
 <body>
 <header>
 <h1>💰 CashFlow Capitals</h1>
-<p>Simple • Smart • Competition Ready</p>
+<p>Regular & Irregular Money Manager</p>
 </header>
 
 <div class="container">
@@ -64,138 +58,182 @@ th{font-weight:600}
 </div>
 
 <div class="card">
-<h2>Monthly Income</h2>
-<input id="income" type="number" placeholder="Enter income">
+<button onclick="setMode('regular')">💼 Regular Income</button>
+<button class="secondary" onclick="setMode('irregular')">🎁 Irregular Income</button>
+</div>
+
+<!-- REGULAR MODE -->
+<div id="regular" class="hidden">
+
+<div class="card">
+<h3>Monthly Income</h3>
+<input id="income" type="number" placeholder="Income">
 <button onclick="saveIncome()">Save</button>
 </div>
 
 <div class="card">
-<h2>Dashboard</h2>
+<h3>Dashboard</h3>
 <div class="stat"><span>Balance</span><b>₹<span id="balance">0</span></b></div>
 <div class="stat"><span>Daily Limit</span><b>₹<span id="daily">0</span></b></div>
 </div>
 
 <div class="card">
-<h2>Add Expense</h2>
+<h3>Add Expense</h3>
 <input id="amount" type="number" placeholder="Amount">
 <select id="category">
-  <option>Food</option>
-  <option>Shopping</option>
-  <option>Entertainment</option>
+<option>Food</option>
+<option>Shopping</option>
+<option>Entertainment</option>
 </select>
-<button onclick="addExpense()">Add Expense</button>
+<button onclick="addExpense()">Add</button>
 </div>
 
 <div class="card">
-<h2>Spending Chart</h2>
-<canvas id="chart"></canvas>
+<canvas id="regularChart"></canvas>
 </div>
 
 <div class="card">
-<h2>📊 Recommended Monthly Split</h2>
-<table>
-<thead>
-<tr><th>Category</th><th>₹ Amount</th></tr>
-</thead>
-<tbody id="recTable"></tbody>
-</table>
+<h3>🤖 Smart Tips</h3>
+<div class="tip" id="regularTips"></div>
 </div>
 
 <div class="card">
-<h2>🤖 Smart Tips</h2>
-<div class="tip" id="tipsBox">Start tracking to see tips.</div>
+<button class="danger" onclick="resetRegular()">Reset Regular Mode</button>
+</div>
+
+</div>
+
+<!-- IRREGULAR MODE -->
+<div id="irregular" class="hidden">
+
+<div class="card">
+<h3>Add Money Received</h3>
+<input id="irrIncome" type="number" placeholder="Amount received">
+<button onclick="addIrregularIncome()">Add Money</button>
 </div>
 
 <div class="card">
-<button class="danger" onclick="resetAll()">Reset All Data</button>
+<h3>Add Expense</h3>
+<input id="irrExpense" type="number" placeholder="Expense amount">
+<button onclick="addIrregularExpense()">Add Expense</button>
+</div>
+
+<div class="card">
+<h3>Status</h3>
+<div class="stat"><span>Total Saved</span><b>₹<span id="irrBalance">0</span></b></div>
+</div>
+
+<div class="card">
+<canvas id="irrChart"></canvas>
+</div>
+
+<div class="card">
+<h3>🤖 Smart Tips</h3>
+<div class="tip" id="irrTips"></div>
+</div>
+
+<div class="card">
+<button class="danger" onclick="resetIrregular()">Reset Irregular Mode</button>
+</div>
+
 </div>
 
 </div>
 
 <script>
-let state = JSON.parse(localStorage.getItem("cfc")) || {
-  income:0,
-  expenses:[],
-  dark:false
+let state=JSON.parse(localStorage.getItem("cfc"))||{
+  dark:false,mode:null,
+  income:0,expenses:[],
+  irrIncome:[],irrExpense:[]
 };
-
 function save(){localStorage.setItem("cfc",JSON.stringify(state))}
-
 document.body.classList.toggle("dark",state.dark);
 
 function toggleDark(){
-  state.dark=!state.dark;
-  document.body.classList.toggle("dark");
-  save();
+ state.dark=!state.dark;
+ document.body.classList.toggle("dark");
+ save();
 }
 
-function saveIncome(){
-  state.income=+income.value;
-  save();update();
+function setMode(m){
+ state.mode=m;
+ document.getElementById("regular").classList.toggle("hidden",m!=="regular");
+ document.getElementById("irregular").classList.toggle("hidden",m!=="irregular");
+ save();update();
 }
 
+function saveIncome(){state.income=+income.value;save();update()}
 function addExpense(){
-  if(amount.value<=0) return;
-  state.expenses.push({a:+amount.value,c:category.value});
-  amount.value="";
-  save();update();
+ if(amount.value<=0)return;
+ state.expenses.push({a:+amount.value,c:category.value});
+ amount.value="";save();update();
+}
+function resetRegular(){
+ if(confirm("Reset regular data?")){
+  state.income=0;state.expenses=[];save();update();
+ }
 }
 
-function resetAll(){
-  if(!confirm("Reset all financial data?"))return;
-  state.income=0;
-  state.expenses=[];
-  save();update();
+function addIrregularIncome(){
+ if(irrIncome.value<=0)return;
+ state.irrIncome.push(+irrIncome.value);
+ irrIncome.value="";save();update();
+}
+function addIrregularExpense(){
+ if(irrExpense.value<=0)return;
+ state.irrExpense.push(+irrExpense.value);
+ irrExpense.value="";save();update();
+}
+function resetIrregular(){
+ if(confirm("Reset irregular data?")){
+  state.irrIncome=[];state.irrExpense=[];save();update();
+ }
 }
 
 function update(){
-  income.value=state.income;
-  let spent=state.expenses.reduce((a,b)=>a+b.a,0);
-  balance.innerText=state.income-spent;
-  daily.innerText=Math.floor((state.income-spent)/30);
-
-  drawChart();
-  drawRecommendations();
-  generateTips(spent);
+ income.value=state.income;
+ let spent=state.expenses.reduce((a,b)=>a+b.a,0);
+ balance.innerText=state.income-spent;
+ daily.innerText=Math.floor((state.income-spent)/30);
+ drawRegular(); drawIrregular(); tips();
 }
 
-function drawChart(){
-  if(window.chartObj)chartObj.destroy();
-  let cats={Food:0,Shopping:0,Entertainment:0};
-  state.expenses.forEach(e=>cats[e.c]+=e.a);
-  chartObj=new Chart(chart,{
-    type:"bar",
-    data:{
-      labels:Object.keys(cats),
-      datasets:[{data:Object.values(cats)}]
-    },
-    options:{plugins:{legend:{display:false}}}
-  });
+function drawRegular(){
+ if(window.rChart)rChart.destroy();
+ let cats={Food:0,Shopping:0,Entertainment:0};
+ state.expenses.forEach(e=>cats[e.c]+=e.a);
+ rChart=new Chart(regularChart,{
+  type:"bar",
+  data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats)}]},
+  options:{plugins:{legend:{display:false}}}
+ });
 }
 
-function drawRecommendations(){
-  let tbody=document.getElementById("recTable");
-  tbody.innerHTML="";
-  let split={Food:.4,Shopping:.3,Entertainment:.3};
-  for(let k in split){
-    let tr=document.createElement("tr");
-    tr.innerHTML=`<td>${k}</td><td>₹${Math.round(state.income*split[k])}</td>`;
-    tbody.appendChild(tr);
-  }
+function drawIrregular(){
+ if(window.iChart)iChart.destroy();
+ let inc=state.irrIncome.reduce((a,b)=>a+b,0);
+ let exp=state.irrExpense.reduce((a,b)=>a+b,0);
+ irrBalance.innerText=inc-exp;
+ iChart=new Chart(irrChart,{
+  type:"doughnut",
+  data:{labels:["Saved","Spent"],datasets:[{data:[inc-exp,exp]}]}
+ });
 }
 
-function generateTips(spent){
-  let box=document.getElementById("tipsBox");
-  if(state.income===0){
-    box.innerText="Add income to unlock smart tips.";
-    return;
-  }
-  let pct=(spent/state.income)*100;
-  if(pct<40) box.innerText="Great control! Consider saving more or investing.";
-  else if(pct<70) box.innerText="Balanced spending. Keep tracking daily expenses.";
-  else box.innerText="High spending detected. Reduce non-essentials this week.";
+function tips(){
+ let spent=state.expenses.reduce((a,b)=>a+b.a,0);
+ let p=spent/state.income*100||0;
+ regularTips.innerText=
+  p<50?"Great control! Save more.":
+  p<80?"Balanced spending.":
+  "High spending! Cut entertainment.";
+ let inc=state.irrIncome.reduce((a,b)=>a+b,0);
+ let exp=state.irrExpense.reduce((a,b)=>a+b,0);
+ irrTips.innerText=
+  inc-exp>exp?"Good saving habit!":"Spend carefully.";
 }
 
+if(state.mode)setMode(state.mode);
 update();
 </script>
 
