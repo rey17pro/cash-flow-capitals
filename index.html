@@ -8,9 +8,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+/* ---------- THEME VARIABLES ---------- */
 :root{
   --primary:#6366f1;
   --accent:#8b5cf6;
+
   --bg1:#e0f2fe;
   --bg2:#fdf4ff;
   --card:#ffffff;
@@ -18,11 +20,21 @@
   --shadow:rgba(99,102,241,0.25);
 }
 
+body.dark{
+  --bg1:#020617;
+  --bg2:#020617;
+  --card:#0f172a;
+  --text:#e5e7eb;
+  --shadow:rgba(0,0,0,0.5);
+}
+
+/* ---------- BASE ---------- */
 body{
   margin:0;
   font-family:Inter,system-ui;
   background:linear-gradient(135deg,var(--bg1),var(--bg2));
   color:var(--text);
+  transition:0.3s;
 }
 
 header{
@@ -44,6 +56,7 @@ header{
   padding:16px;
   margin-bottom:16px;
   box-shadow:0 14px 32px var(--shadow);
+  transition:0.3s;
 }
 
 h2{
@@ -61,6 +74,8 @@ input,button{
   border-radius:10px;
   border:2px solid #e5e7eb;
   font-size:14px;
+  background:var(--card);
+  color:var(--text);
 }
 
 button{
@@ -68,6 +83,7 @@ button{
   color:white;
   border:none;
   font-weight:600;
+  cursor:pointer;
 }
 
 .mode{
@@ -100,6 +116,16 @@ button{
   background:linear-gradient(135deg,#22c55e,#16a34a);
   color:white;
 }
+
+/* ---------- DARK MODE BUTTON ---------- */
+.toggle{
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  padding:12px 14px;
+  border-radius:50%;
+  font-size:18px;
+}
 </style>
 </head>
 
@@ -110,14 +136,16 @@ button{
 <p>Competition-Ready Smart Money Planner</p>
 </header>
 
+<button class="toggle" onclick="toggleDark()">🌙</button>
+
 <div class="container">
 
 <!-- MODE -->
 <div class="card">
 <h2>🎯 Select Planning Mode</h2>
 <p class="small">
-Regular Mode is for monthly income.  
-Future Mode is for planning big goals.
+Regular Mode → monthly budgeting  
+Future Mode → long-term goal planning
 </p>
 <div class="mode">
   <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
@@ -136,9 +164,6 @@ Future Mode is for planning big goals.
 
 <div class="card">
 <h2>📊 Monthly Budget Recommendation</h2>
-<p class="small">
-Based on a balanced financial rule used by financial advisors.
-</p>
 <canvas id="regularChart"></canvas>
 <div id="regularText"></div>
 </div>
@@ -172,9 +197,18 @@ Based on a balanced financial rule used by financial advisors.
 </div>
 
 <script>
-let state = JSON.parse(localStorage.getItem("cfc")) || {mode:null};
+let state = JSON.parse(localStorage.getItem("cfc")) || {mode:null,dark:false};
 function save(){localStorage.setItem("cfc",JSON.stringify(state));}
 
+/* DARK MODE */
+document.body.classList.toggle("dark",state.dark);
+function toggleDark(){
+  state.dark=!state.dark;
+  document.body.classList.toggle("dark");
+  save();
+}
+
+/* MODE SWITCH */
 function setMode(m){
   state.mode=m; save();
   regular.classList.toggle("hidden",m!=="regular");
@@ -186,29 +220,21 @@ if(state.mode) setMode(state.mode);
 
 let regChart, futChart;
 
-/* REGULAR MODE LOGIC */
+/* REGULAR MODE */
 function calculateRegular(){
-  let income = +regIncome.value;
+  let income=+regIncome.value;
   if(income<=0){alert("Enter valid income");return;}
 
-  let food = income*0.35;
-  let shopping = income*0.20;
-  let entertainment = income*0.15;
-  let savings = income*0.20;
-  let other = income*0.10;
+  let food=income*0.35, shop=income*0.20, ent=income*0.15, saveM=income*0.20, other=income*0.10;
 
   if(regChart) regChart.destroy();
-  regChart = new Chart(regularChart,{
+  regChart=new Chart(regularChart,{
     type:"doughnut",
     data:{
       labels:["Food","Shopping","Entertainment","Savings","Other"],
       datasets:[{
-        data:[
-          food,shopping,entertainment,savings,other
-        ],
-        backgroundColor:[
-          "#22c55e","#3b82f6","#a855f7","#10b981","#f97316"
-        ]
+        data:[food,shop,ent,saveM,other],
+        backgroundColor:["#22c55e","#3b82f6","#a855f7","#10b981","#f97316"]
       }]
     },
     options:{cutout:"65%",plugins:{legend:{position:"bottom"}}}
@@ -216,36 +242,23 @@ function calculateRegular(){
 
   regularText.innerHTML=`
   <div class="result">
-    <p>💾 Savings per month: <b>₹${Math.round(savings)}</b></p>
-    <p>📅 Daily spending limit: <b>₹${Math.round((income-savings)/30)}</b></p>
+    💾 Save monthly: <b>₹${Math.round(saveM)}</b><br>
+    📅 Daily spending limit: <b>₹${Math.round((income-saveM)/30)}</b>
   </div>`;
 }
 
-/* FUTURE MODE LOGIC */
+/* FUTURE MODE */
 function calculateFuture(){
-  let total = +futureMoney.value;
-  let years = +futureYears.value;
-  let cost = +goalCost.value;
-  let name = goalName.value;
+  let total=+futureMoney.value, years=+futureYears.value, cost=+goalCost.value, name=goalName.value;
+  if(total<=0||years<=0||cost<=0||!name){alert("Fill all fields");return;}
 
-  if(total<=0||years<=0||cost<=0||!name){
-    alert("Fill all fields");return;
-  }
-
-  let months = years*12;
-  let monthlyMoney = total/months;
-  let save = cost/months;
-  let spend = monthlyMoney-save;
-
-  if(spend<0){
-    futureText.innerHTML="<div class='result'>⚠️ Goal not feasible</div>";
-    return;
-  }
+  let months=years*12, monthly=total/months, saveM=cost/months, spend=monthly-saveM;
+  if(spend<0){futureText.innerHTML="<div class='result'>⚠️ Goal not feasible</div>";return;}
 
   let food=spend*0.40, shop=spend*0.25, ent=spend*0.20, other=spend*0.15;
 
   if(futChart) futChart.destroy();
-  futChart = new Chart(futureChart,{
+  futChart=new Chart(futureChart,{
     type:"doughnut",
     data:{
       labels:["Food","Shopping","Entertainment","Other"],
@@ -259,9 +272,9 @@ function calculateFuture(){
 
   futureText.innerHTML=`
   <div class="result">
-    <p>🎯 Goal: <b>${name}</b></p>
-    <p>💾 Save monthly: <b>₹${Math.round(save)}</b></p>
-    <p>🧾 Spend monthly: <b>₹${Math.round(spend)}</b></p>
+    🎯 ${name}<br>
+    💾 Save monthly: <b>₹${Math.round(saveM)}</b><br>
+    🧾 Spend monthly: <b>₹${Math.round(spend)}</b>
   </div>`;
 }
 </script>
