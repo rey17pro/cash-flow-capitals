@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CashFlow Capitals</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,36 +12,41 @@
   --bg:#f0f9ff;
   --card:#ffffff;
   --text:#0f172a;
-  --primary:#3b82f6;
+  --primary:#6366f1;
   --accent:#8b5cf6;
-  --success:#10b981;
+  --success:#22c55e;
   --danger:#ef4444;
-  --shadow:rgba(59,130,246,0.15);
+  --shadow:rgba(99,102,241,0.2);
 }
+
 body{
   margin:0;
   font-family:Inter,system-ui;
   background:linear-gradient(135deg,#e0f2fe,#fdf4ff);
   color:var(--text);
 }
+
 header{
   background:linear-gradient(135deg,#6366f1,#8b5cf6);
-  color:#fff;
-  padding:24px;
+  color:white;
   text-align:center;
+  padding:24px;
 }
+
 .container{
   max-width:520px;
   margin:auto;
   padding:16px;
 }
+
 .card{
   background:var(--card);
-  border-radius:16px;
+  border-radius:18px;
   padding:16px;
   margin-bottom:16px;
-  box-shadow:0 10px 30px var(--shadow);
+  box-shadow:0 12px 30px var(--shadow);
 }
+
 h2{
   margin:0 0 12px;
   font-size:18px;
@@ -49,7 +54,8 @@ h2{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-input,select,button{
+
+input,button{
   width:100%;
   padding:12px;
   margin-top:8px;
@@ -57,40 +63,47 @@ input,select,button{
   border:2px solid #e5e7eb;
   font-size:14px;
 }
+
 button{
   background:linear-gradient(135deg,var(--primary),var(--accent));
   color:white;
   border:none;
   font-weight:600;
 }
+
 .small{font-size:13px;opacity:0.85}
-.result-box{
-  margin-top:12px;
-  padding:14px;
-  border-radius:12px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:white;
-}
-.big{
-  font-size:26px;
-  font-weight:800;
-}
 .hidden{display:none}
+
 .mode{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
+
 .mode div{
   padding:12px;
-  text-align:center;
   border-radius:10px;
   border:2px solid #e5e7eb;
+  text-align:center;
 }
+
 .mode .active{
   background:linear-gradient(135deg,var(--primary),var(--accent));
   color:white;
   border:none;
+}
+
+.result-box{
+  margin-top:12px;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
+}
+
+.big{
+  font-size:26px;
+  font-weight:800;
 }
 </style>
 </head>
@@ -99,26 +112,25 @@ button{
 
 <header>
 <h1>💰 CashFlow Capitals</h1>
-<p>Plan • Save • Spend Smart</p>
+<p>Plan your future money smartly</p>
 </header>
 
 <div class="container">
 
-<!-- MODE SELECT -->
+<!-- MODE -->
 <div class="card">
 <h2>🎯 Choose Mode</h2>
 <div class="mode">
   <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
-  <div id="irrBtn" onclick="setMode('irregular')">Irregular Income</div>
+  <div id="irrBtn" onclick="setMode('irregular')">Irregular / Future</div>
 </div>
 </div>
 
 <!-- REGULAR MODE -->
 <div id="regular" class="hidden">
   <div class="card">
-    <h2>💵 Monthly Income</h2>
-    <input id="income" type="number" placeholder="Enter monthly income"/>
-    <button onclick="saveIncome()">Save</button>
+    <h2>💼 Regular Mode</h2>
+    <p class="small">This mode is under expansion.</p>
   </div>
 </div>
 
@@ -126,16 +138,16 @@ button{
 <div id="irregular" class="hidden">
 
   <div class="card">
-    <h2>💰 Total Future Money</h2>
-    <input id="futureMoney" type="number" placeholder="Money you’ll have in future (₹)">
+    <h2>💰 Future Money Overview</h2>
+    <input id="futureMoney" type="number" placeholder="Total money you’ll have (₹)">
     <input id="futureYears" type="number" placeholder="In how many years?">
   </div>
 
   <div class="card">
     <h2>🛒 Plan a Future Purchase</h2>
     <p class="small">
-      We’ll recommend how much you can spend monthly
-      while saving for this item.
+      We calculate how much you should save and how much you can safely spend
+      every month — with category-wise guidance.
     </p>
 
     <input id="itemName" placeholder="Item name (e.g. Laptop)">
@@ -143,34 +155,27 @@ button{
     <button onclick="recommendPlan()">📊 Get Recommendation</button>
 
     <div id="planResult"></div>
+    <canvas id="spendChart" style="margin-top:16px"></canvas>
   </div>
 
 </div>
-
 </div>
 
 <script>
-let state = JSON.parse(localStorage.getItem("cfc-app")) || {mode:null,income:0};
-
-function save(){localStorage.setItem("cfc-app",JSON.stringify(state));}
+let state = JSON.parse(localStorage.getItem("cfc")) || {mode:null};
+function save(){localStorage.setItem("cfc",JSON.stringify(state));}
 
 function setMode(m){
   state.mode=m; save();
-  document.getElementById("regular").classList.toggle("hidden",m!=="regular");
-  document.getElementById("irregular").classList.toggle("hidden",m!=="irregular");
-  document.getElementById("regBtn").classList.toggle("active",m==="regular");
-  document.getElementById("irrBtn").classList.toggle("active",m==="irregular");
+  regular.classList.toggle("hidden",m!=="regular");
+  irregular.classList.toggle("hidden",m!=="irregular");
+  regBtn.classList.toggle("active",m==="regular");
+  irrBtn.classList.toggle("active",m==="irregular");
 }
-
 if(state.mode) setMode(state.mode);
 
-function saveIncome(){
-  state.income=+income.value;
-  save();
-  alert("Income saved!");
-}
+let spendChart;
 
-/* ⭐ YOUR REQUESTED FEATURE ⭐ */
 function recommendPlan(){
   let total = +futureMoney.value;
   let years = +futureYears.value;
@@ -182,7 +187,7 @@ function recommendPlan(){
     return;
   }
 
-  let months = years*12;
+  let months = years * 12;
   let monthlyMoney = total / months;
   let monthlySave = cost / months;
   let monthlySpend = monthlyMoney - monthlySave;
@@ -190,32 +195,60 @@ function recommendPlan(){
   if(monthlySpend < 0){
     planResult.innerHTML = `
       <div class="result-box">
-        <b>⚠️ Not possible</b>
-        <p>You won’t have enough money to buy ${item}.</p>
+        <b>⚠️ Not feasible</b>
+        <p>Your future money is not enough.</p>
       </div>`;
     return;
   }
 
+  // CATEGORY SPLIT
+  let food = monthlySpend * 0.40;
+  let shopping = monthlySpend * 0.25;
+  let entertainment = monthlySpend * 0.20;
+  let other = monthlySpend * 0.15;
+
   planResult.innerHTML = `
     <div class="result-box">
       <h3>🛍️ ${item}</h3>
-      <p>Total money in ${years} years:</p>
-      <div class="big">₹${total.toLocaleString()}</div>
-
-      <hr style="opacity:0.4">
-
-      <p>💾 Save per month:</p>
-      <div class="big">₹${Math.ceil(monthlySave)}</div>
-
-      <p>🧾 Spend per month:</p>
-      <div class="big">₹${Math.floor(monthlySpend)}</div>
-
+      <p>💰 Monthly money: <b>₹${Math.floor(monthlyMoney)}</b></p>
+      <p>💾 Save per month: <b>₹${Math.ceil(monthlySave)}</b></p>
+      <p>🧾 Spend per month: <b>₹${Math.floor(monthlySpend)}</b></p>
       <p class="small">
-        Save first, then spend the rest.
-        This way you can buy <b>${item}</b> safely.
+        Save first, then spend the rest using the chart below.
       </p>
     </div>
   `;
+
+  if(spendChart) spendChart.destroy();
+
+  spendChart = new Chart(document.getElementById("spendChart"),{
+    type:"doughnut",
+    data:{
+      labels:["Food","Shopping","Entertainment","Other"],
+      datasets:[{
+        data:[
+          Math.round(food),
+          Math.round(shopping),
+          Math.round(entertainment),
+          Math.round(other)
+        ],
+        backgroundColor:[
+          "rgba(34,197,94,0.8)",
+          "rgba(59,130,246,0.8)",
+          "rgba(168,85,247,0.8)",
+          "rgba(249,115,22,0.8)"
+        ],
+        borderWidth:3,
+        borderColor:"#fff"
+      }]
+    },
+    options:{
+      cutout:"65%",
+      plugins:{
+        legend:{position:"bottom"}
+      }
+    }
+  });
 }
 </script>
 
