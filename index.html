@@ -1,282 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CashFlow Compass</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CashFlow Compass — Smart Budget Planner</title>
 
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-/* ---------- THEME VARIABLES ---------- */
 :root{
-  --primary:#6366f1;
-  --accent:#8b5cf6;
-
-  --bg1:#e0f2fe;
-  --bg2:#fdf4ff;
-  --card:#ffffff;
-  --text:#0f172a;
-  --shadow:rgba(99,102,241,0.25);
+  --primary:#6366f1; --accent:#8b5cf6; --bg:#eef2ff; --card:#ffffff; --text:#0f172a;
+  --success:#22c55e; --danger:#ef4444; --muted:#6b7280;
 }
-
 body.dark{
-  --bg1:#020617;
-  --bg2:#020617;
-  --card:#0f172a;
-  --text:#e5e7eb;
-  --shadow:rgba(0,0,0,0.5);
+  --bg:#020617; --card:#0f172a; --text:#e5e7eb; --muted:#94a3b8;
 }
-
-/* ---------- BASE ---------- */
 body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  color:var(--text);
-  transition:0.3s;
+  margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  background:var(--bg); color:var(--text); transition:background .25s,color .25s;
 }
-
 header{
   background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  text-align:center;
-  padding:26px;
+  color:#fff;padding:20px 16px;text-align:center;
 }
-
-.container{
-  max-width:540px;
-  margin:auto;
-  padding:16px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 14px 32px var(--shadow);
-  transition:0.3s;
-}
-
-h2{
-  margin-bottom:10px;
-  font-size:18px;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  border-radius:10px;
-  border:2px solid #e5e7eb;
-  font-size:14px;
-  background:var(--card);
-  color:var(--text);
-}
-
-button{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  border:none;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.mode{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.mode div{
-  padding:12px;
-  border-radius:10px;
-  border:2px solid #e5e7eb;
-  text-align:center;
-  cursor:pointer;
-}
-
-.mode .active{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  border:none;
-}
-
+.container{max-width:640px;margin:16px auto;padding:12px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 12px 30px rgba(99,102,241,0.12)}
+h2{margin:0 0 10px;font-size:18px;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+input,button,select{width:100%;padding:10px 12px;margin-top:8px;border-radius:10px;border:1px solid #e5e7eb;background:var(--card);color:var(--text);font-size:14px}
+button{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;font-weight:600;cursor:pointer}
+.small{font-size:13px;color:var(--muted);margin-top:6px}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode div{padding:12px;border-radius:10px;border:1px solid #e5e7eb;text-align:center;cursor:pointer}
+.mode .active{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none}
 .hidden{display:none}
-.small{font-size:13px;opacity:.85}
-
-.result{
-  margin-top:12px;
-  padding:14px;
-  border-radius:14px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:white;
-}
-
-/* ---------- DARK MODE BUTTON ---------- */
-.toggle{
-  position:fixed;
-  right:14px;
-  bottom:14px;
-  padding:12px 14px;
-  border-radius:50%;
-  font-size:18px;
-}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}
+th{opacity:.8}
+.controls{display:flex;gap:8px}
+.controls button{flex:1}
+.toggle, .reset, .installBtn{position:fixed;bottom:14px;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border:none;cursor:pointer}
+.toggle{right:14px}
+.installBtn{right:110px}
+.reset{left:14px;background:linear-gradient(135deg,#ef4444,#dc2626);left:14px}
+.tips{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#111}
+.tips ul{margin:8px 0 0 18px}
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:40}
+.iosCard{background:var(--card);padding:18px;border-radius:12px;max-width:420px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
 </style>
 </head>
 
 <body>
-
 <header>
-<h1>💰 CashFlow Compass</h1>
-<p>Competition-Ready Smart Money Planner</p>
+  <h1>💰 CashFlow Compass</h1>
+  <p class="small">Competition-ready — budgeting, planning, AI tips & PWA install</p>
 </header>
 
-<button class="toggle" onclick="toggleDark()">🌙</button>
+<!-- Floating controls -->
+<button class="toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
+<button class="installBtn hidden" id="installBtn" title="Install app">⬇️ Install</button>
+<button class="reset" id="resetBtn" title="Reset app">🔄</button>
 
 <div class="container">
 
-<!-- MODE -->
-<div class="card">
-<h2>🎯 Select Planning Mode</h2>
-<p class="small">
-Regular Mode → monthly budgeting  
-Future Mode → long-term goal planning
-</p>
-<div class="mode">
-  <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
-  <div id="futBtn" onclick="setMode('future')">Future Planning</div>
+  <!-- Mode selector -->
+  <div class="card">
+    <h2>🎯 Choose Mode</h2>
+    <p class="small">Regular: monthly salary/allowance budgeting. Future: plan a purchase from future funds.</p>
+    <div class="mode">
+      <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
+      <div id="futBtn" onclick="setMode('future')">Future Planning</div>
+    </div>
+  </div>
+
+  <!-- Regular Mode -->
+  <div id="regular" class="hidden">
+    <div class="card">
+      <h2>💵 Regular — Monthly Income</h2>
+      <input id="regIncome" type="number" placeholder="Enter monthly income (₹)"/>
+      <div class="controls">
+        <button onclick="calcRegular()">Calculate</button>
+        <button onclick="generateTips('regular')">AI Tips</button>
+      </div>
+      <p class="small">We use a balanced split to recommend monthly allocations and savings.</p>
+    </div>
+
+    <div class="card">
+      <h2>📊 Recommendation & Table</h2>
+      <canvas id="regChart"></canvas>
+      <table id="regTable"></table>
+      <div id="regSummary" class="small"></div>
+    </div>
+
+    <div class="card">
+      <h2>💡 AI Spending Tips</h2>
+      <div id="regTips" class="tips small">Press <b>AI Tips</b> for tailored suggestions.</div>
+    </div>
+  </div>
+
+  <!-- Future Mode -->
+  <div id="future" class="hidden">
+    <div class="card">
+      <h2>📆 Future — Plan a Purchase from Future Money</h2>
+      <input id="futureMoney" type="number" placeholder="Total money you'll have (₹)"/>
+      <input id="futureYears" type="number" placeholder="In how many years?"/>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Goal</h2>
+      <input id="goalName" placeholder="Item name (e.g. Laptop)"/>
+      <input id="goalCost" type="number" placeholder="Item cost (₹)"/>
+      <div class="controls">
+        <button onclick="calcFuture()">Get Plan</button>
+        <button onclick="generateTips('future')">AI Tips</button>
+      </div>
+      <p class="small">We'll recommend monthly saving & spending and show a category split for spending.</p>
+    </div>
+
+    <div class="card">
+      <h2>📊 Monthly Plan & Table</h2>
+      <canvas id="futChart"></canvas>
+      <table id="futTable"></table>
+      <div id="futSummary" class="small"></div>
+    </div>
+
+    <div class="card">
+      <h2>💡 AI Spending Tips</h2>
+      <div id="futTips" class="tips small">Press <b>AI Tips</b> for actionable, prioritized recommendations.</div>
+    </div>
+  </div>
+
 </div>
-</div>
 
-<!-- REGULAR MODE -->
-<div id="regular" class="hidden">
-
-<div class="card">
-<h2>💵 Monthly Income</h2>
-<input id="regIncome" type="number" placeholder="Enter monthly income (₹)">
-<button onclick="calculateRegular()">Calculate Budget</button>
-</div>
-
-<div class="card">
-<h2>📊 Monthly Budget Recommendation</h2>
-<canvas id="regularChart"></canvas>
-<div id="regularText"></div>
-</div>
-
-</div>
-
-<!-- FUTURE MODE -->
-<div id="future" class="hidden">
-
-<div class="card">
-<h2>📆 Future Money</h2>
-<input id="futureMoney" type="number" placeholder="Total money you will have (₹)">
-<input id="futureYears" type="number" placeholder="In how many years?">
-</div>
-
-<div class="card">
-<h2>🎯 Future Goal</h2>
-<input id="goalName" placeholder="Goal (e.g. Laptop)">
-<input id="goalCost" type="number" placeholder="Goal cost (₹)">
-<button onclick="calculateFuture()">Get Plan</button>
-</div>
-
-<div class="card">
-<h2>📊 Monthly Spending Plan</h2>
-<canvas id="futureChart"></canvas>
-<div id="futureText"></div>
-</div>
-
-</div>
-
+<!-- iOS install overlay (hidden by default) -->
+<div id="iosPrompt" class="overlay hidden">
+  <div class="iosCard">
+    <h3>Install CashFlow Compass</h3>
+    <p class="small">On iPhone: tap <b>Share</b> → <b>Add to Home Screen</b> to install.</p>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button onclick="closeIOS()" style="flex:1">Got it</button>
+    </div>
+  </div>
 </div>
 
 <script>
-let state = JSON.parse(localStorage.getItem("cfc")) || {mode:null,dark:false};
-function save(){localStorage.setItem("cfc",JSON.stringify(state));}
+/* --------------------------
+   App state + persistence
+   -------------------------- */
+const STORAGE_KEY = "cashflow_compass_v1";
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {mode:null,dark:false};
+function saveState(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
 
-/* DARK MODE */
-document.body.classList.toggle("dark",state.dark);
-function toggleDark(){
-  state.dark=!state.dark;
-  document.body.classList.toggle("dark");
-  save();
-}
+/* --------------------------
+   DOM shortcuts
+   -------------------------- */
+const regBtn = document.getElementById("regBtn");
+const futBtn = document.getElementById("futBtn");
+const regular = document.getElementById("regular");
+const future = document.getElementById("future");
+const regChartEl = document.getElementById("regChart");
+const futChartEl = document.getElementById("futChart");
+const regTable = document.getElementById("regTable");
+const futTable = document.getElementById("futTable");
+const regSummary = document.getElementById("regSummary");
+const futSummary = document.getElementById("futSummary");
+const regTipsEl = document.getElementById("regTips");
+const futTipsEl = document.getElementById("futTips");
+const darkToggle = document.getElementById("darkToggle");
+const resetBtn = document.getElementById("resetBtn");
+const installBtn = document.getElementById("installBtn");
+const iosPrompt = document.getElementById("iosPrompt");
 
-/* MODE SWITCH */
-function setMode(m){
-  state.mode=m; save();
-  regular.classList.toggle("hidden",m!=="regular");
-  future.classList.toggle("hidden",m!=="future");
-  regBtn.classList.toggle("active",m==="regular");
-  futBtn.classList.toggle("active",m==="future");
-}
+/* --------------------------
+   Initial UI state
+   -------------------------- */
+document.body.classList.toggle("dark", !!state.dark);
 if(state.mode) setMode(state.mode);
 
-let regChart, futChart;
+/* --------------------------
+   Dark & Reset controls
+   -------------------------- */
+darkToggle.addEventListener("click", toggleDark);
+resetBtn.addEventListener("click", resetApp);
 
-/* REGULAR MODE */
-function calculateRegular(){
-  let income=+regIncome.value;
-  if(income<=0){alert("Enter valid income");return;}
+/* --------------------------
+   Mode switching
+   -------------------------- */
+function setMode(m){
+  state.mode = m; saveState();
+  regular.classList.toggle("hidden", m !== "regular");
+  future.classList.toggle("hidden", m !== "future");
+  regBtn.classList.toggle("active", m === "regular");
+  futBtn.classList.toggle("active", m === "future");
+}
 
-  let food=income*0.35, shop=income*0.20, ent=income*0.15, saveM=income*0.20, other=income*0.10;
+/* --------------------------
+   Reset app
+   -------------------------- */
+function resetApp(){
+  if(!confirm("Reset app to default? This clears saved preferences.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+/* --------------------------
+   DARK TOGGLE
+   -------------------------- */
+function toggleDark(){
+  state.dark = !state.dark; saveState();
+  document.body.classList.toggle("dark", state.dark);
+}
+
+/* --------------------------
+   Charts & helpers
+   -------------------------- */
+let regChart=null, futChart=null;
+function buildTable(container, rows, total){
+  container.innerHTML = "<tr><th>Category</th><th>₹ / month</th><th>%</th></tr>" +
+    rows.map(r=>`<tr><td>${r.name}</td><td>₹${Math.round(r.val).toLocaleString()}</td><td>${Math.round(r.val/total*100)}%</td></tr>`).join("");
+}
+
+/* --------------------------
+   REGULAR mode logic
+   - Balanced split: 35/20/15/20/10
+   -------------------------- */
+function calcRegular(){
+  const income = +document.getElementById("regIncome").value;
+  if(!income || income <= 0){ alert("Enter a valid monthly income"); return; }
+
+  const rows = [
+    {name:"Food", val: income * 0.35},
+    {name:"Shopping", val: income * 0.20},
+    {name:"Entertainment", val: income * 0.15},
+    {name:"Savings", val: income * 0.20},
+    {name:"Other", val: income * 0.10}
+  ];
 
   if(regChart) regChart.destroy();
-  regChart=new Chart(regularChart,{
-    type:"doughnut",
-    data:{
-      labels:["Food","Shopping","Entertainment","Savings","Other"],
-      datasets:[{
-        data:[food,shop,ent,saveM,other],
-        backgroundColor:["#22c55e","#3b82f6","#a855f7","#10b981","#f97316"]
-      }]
-    },
-    options:{cutout:"65%",plugins:{legend:{position:"bottom"}}}
+  regChart = new Chart(regChartEl, {
+    type: "doughnut",
+    data: { labels: rows.map(r=>r.name), datasets:[{ data: rows.map(r=>r.val), backgroundColor:["#22c55e","#3b82f6","#a855f7","#10b981","#f97316"], borderColor:"#fff", borderWidth:2 }]},
+    options: { cutout: "65%", plugins: { legend: { position: "bottom" } } }
   });
 
-  regularText.innerHTML=`
-  <div class="result">
-    💾 Save monthly: <b>₹${Math.round(saveM)}</b><br>
-    📅 Daily spending limit: <b>₹${Math.round((income-saveM)/30)}</b>
-  </div>`;
+  buildTable(regTable, rows, income);
+
+  // Summary (daily guidance and savings)
+  const savings = rows.find(r=>r.name==="Savings").val;
+  regSummary.innerHTML = `Save per month: <b>₹${Math.round(savings).toLocaleString()}</b>. Approx. daily spending limit (non-savings): <b>₹${Math.round((income - savings)/30).toLocaleString()}</b>.`;
 }
 
-/* FUTURE MODE */
-function calculateFuture(){
-  let total=+futureMoney.value, years=+futureYears.value, cost=+goalCost.value, name=goalName.value;
-  if(total<=0||years<=0||cost<=0||!name){alert("Fill all fields");return;}
+/* --------------------------
+   FUTURE mode logic
+   - monthlyMoney = total/months
+   - monthlySave = goalCost/months
+   - monthlySpend = monthlyMoney - monthlySave
+   - category split: 40/25/20/15
+   -------------------------- */
+function calcFuture(){
+  const total = +document.getElementById("futureMoney").value;
+  const years = +document.getElementById("futureYears").value;
+  const cost = +document.getElementById("goalCost").value;
+  const name = document.getElementById("goalName").value?.trim();
 
-  let months=years*12, monthly=total/months, saveM=cost/months, spend=monthly-saveM;
-  if(spend<0){futureText.innerHTML="<div class='result'>⚠️ Goal not feasible</div>";return;}
+  if(!total || total <=0 || !years || years <=0 || !cost || cost <=0 || !name){
+    alert("Fill all fields correctly (total money, years, goal and cost)."); return;
+  }
 
-  let food=spend*0.40, shop=spend*0.25, ent=spend*0.20, other=spend*0.15;
+  const months = years * 12;
+  const monthlyMoney = total / months;
+  const monthlySave = cost / months;
+  const monthlySpend = monthlyMoney - monthlySave;
+
+  if(monthlySpend <= 0){
+    futSummary.innerHTML = `<span style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger') || '#ef4444'}">Not feasible: you need more total money or more time to afford "${name}".</span>`;
+    futTable.innerHTML = "";
+    if(futChart){ futChart.destroy(); futChart = null; }
+    return;
+  }
+
+  const rows = [
+    {name:"Food", val: monthlySpend * 0.40},
+    {name:"Shopping", val: monthlySpend * 0.25},
+    {name:"Entertainment", val: monthlySpend * 0.20},
+    {name:"Other", val: monthlySpend * 0.15}
+  ];
 
   if(futChart) futChart.destroy();
-  futChart=new Chart(futureChart,{
-    type:"doughnut",
-    data:{
-      labels:["Food","Shopping","Entertainment","Other"],
-      datasets:[{
-        data:[food,shop,ent,other],
-        backgroundColor:["#22c55e","#3b82f6","#a855f7","#f97316"]
-      }]
-    },
-    options:{cutout:"65%",plugins:{legend:{position:"bottom"}}}
+  futChart = new Chart(futChartEl, {
+    type: "doughnut",
+    data: { labels: rows.map(r=>r.name), datasets:[{ data: rows.map(r=>r.val), backgroundColor:["#22c55e","#3b82f6","#a855f7","#f97316"], borderColor:"#fff", borderWidth:2 }]},
+    options: { cutout: "65%", plugins: { legend: { position: "bottom" } } }
   });
 
-  futureText.innerHTML=`
-  <div class="result">
-    🎯 ${name}<br>
-    💾 Save monthly: <b>₹${Math.round(saveM)}</b><br>
-    🧾 Spend monthly: <b>₹${Math.round(spend)}</b>
-  </div>`;
+  buildTable(futTable, rows, monthlySpend);
+  futSummary.innerHTML = `Goal: <b>${name}</b>. Save/month: <b>₹${Math.round(monthlySave).toLocaleString()}</b>. Spend/month allowed: <b>₹${Math.round(monthlySpend).toLocaleString()}</b>.`;
 }
+
+/* --------------------------
+   AI Spending Tips (rule-based)
+   - Produces prioritized, actionable tips
+   - Safe: runs entirely in browser, no external APIs
+   -------------------------- */
+function generateTips(mode){
+  if(mode === "regular"){
+    const income = +document.getElementById("regIncome").value;
+    if(!income || income <= 0){ alert("Enter monthly income to get tips."); return; }
+    const food = income*0.35, shop = income*0.20, ent = income*0.15, save = income*0.20, other = income*0.10;
+    const tips = [];
+
+    // Priority recommendations
+    tips.push({p:1, text:`Aim to automate monthly savings of ₹${Math.round(save).toLocaleString()} into a savings account each payday.`});
+    if((save / income) < 0.15) tips.push({p:0, text:"Increase your savings rate to at least 15% — small increases add up quickly."});
+    if(shop > income*0.25) tips.push({p:0, text:"Shopping is high — set a weekly budget and remove 1-2 unneeded subscriptions."});
+    tips.push({p:2, text:`Set a daily food budget: approx ₹${Math.round(food/30).toLocaleString()} per day.`});
+    tips.push({p:2, text:"Use 'envelope' approach: withdraw weekly food money or use a dedicated card to avoid overspend."});
+    tips.push({p:3, text:"Track expenses for 2 weeks, then reduce one recurring cost (streaming, subscriptions) and move that to savings."});
+    tips.push({p:4, text:"If emergency fund is absent, prioritize building 1 month of expenses as the first goal."});
+
+    // Sort by priority (lower p = higher priority)
+    tips.sort((a,b)=>a.p-b.p);
+
+    // Render prioritized tips
+    regTipsEl.innerHTML = `<strong>Personalized Tips</strong><ul>` + tips.map(t=>`<li>${t.text}</li>`).join("") + `</ul>`;
+  } else if(mode === "future"){
+    const total = +document.getElementById("futureMoney").value;
+    const years = +document.getElementById("futureYears").value;
+    const cost = +document.getElementById("goalCost").value;
+    const name = document.getElementById("goalName").value?.trim();
+    if(!total || total<=0 || !years || years<=0 || !cost || cost<=0 || !name){ alert("Fill future money, years and goal to get tips."); return; }
+
+    const months = years*12;
+    const monthlyMoney = total / months;
+    const monthlySave = cost / months;
+    const monthlySpend = monthlyMoney - monthlySave;
+
+    const tips = [];
+    tips.push({p:1, text:`To buy ${name} in ${years} years, save ₹${Math.round(monthlySave).toLocaleString()} per month.`});
+    if(monthlySpend < monthlySave) tips.push({p:0, text:"Spending room is tight — consider increasing timeframe or adding more funds to future money."});
+    tips.push({p:2, text:`Recommended monthly spending: ₹${Math.round(monthlySpend).toLocaleString()}. Split this into categories using the table.`});
+    tips.push({p:2, text:"Automate the monthly saving (standing instructions) so you never miss the target."});
+    tips.push({p:3, text:"If you currently have high non-essential spend, redirect one subscription to the goal to accelerate progress."});
+    tips.push({p:4, text:"Check goal progress every 3 months and re-balance if income or future funds change."});
+
+    tips.sort((a,b)=>a.p-b.p);
+    futTipsEl.innerHTML = `<strong>Personalized Tips</strong><ul>` + tips.map(t=>`<li>${t.text}</li>`).join("") + `</ul>`;
+  }
+}
+
+/* --------------------------
+   PWA: manifest + inline service worker + install handling
+   - Works on GitHub Pages
+   - Android: beforeinstallprompt captured (shows install button)
+   - iOS: shows friendly manual instructions once
+   -------------------------- */
+
+// Inline Manifest (created at runtime so no extra file)
+const manifest = {
+  name: "CashFlow Compass",
+  short_name: "CashFlow",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#020617",
+  theme_color: "#6366f1",
+  icons: [{
+    src: "https://cdn-icons-png.flaticon.com/512/3135/3135706.png",
+    sizes: "512x512",
+    type: "image/png"
+  }]
+};
+const mBlob = new Blob([JSON.stringify(manifest)], {type: "application/json"});
+const mURL = URL.createObjectURL(mBlob);
+const link = document.createElement("link");
+link.rel = "manifest";
+link.href = mURL;
+document.head.appendChild(link);
+
+// Inline Service Worker (register as blob URL)
+if('serviceWorker' in navigator){
+  const swCode = `
+    const CACHE = 'cashflow-compass-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(self.clients.claim());
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+    });
+  `;
+  const swBlob = new Blob([swCode], {type: "text/javascript"});
+  const swURL = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swURL).catch(()=>{/* silent fail */});
+}
+
+// beforeinstallprompt for Android/Chromium
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // show install button
+  installBtn.classList.remove('hidden');
+});
+
+installBtn.addEventListener('click', async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const choice = await deferredPrompt.userChoice;
+  if(choice.outcome === 'accepted'){
+    installBtn.classList.add('hidden');
+  }
+  deferredPrompt = null;
+});
+
+// iOS detection: show a small manual prompt once
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+if(isIOS() && !localStorage.getItem('ios_shown')){
+  setTimeout(()=>{ iosPrompt.classList.remove('hidden'); localStorage.setItem('ios_shown','1'); }, 1200);
+}
+function closeIOS(){ iosPrompt.classList.add('hidden'); }
+
+/* --------------------------
+   Initialize (restore state)
+   -------------------------- */
+(function init(){
+  if(state.mode) setMode(state.mode);
+  if(state.dark) document.body.classList.add('dark');
+})();
 </script>
 
 </body>
