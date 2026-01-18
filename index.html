@@ -1,247 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CashFlow Capitals</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root{
-  --primary:#6366f1;
-  --accent:#8b5cf6;
-  --bg:#eef2ff;
-  --card:#ffffff;
-  --text:#0f172a;
+  --bg:#f8fafc; --card:#ffffff; --text:#0f172a;
+  --primary:#2563eb; --accent:#7c3aed;
 }
 body.dark{
-  --bg:#020617;
-  --card:#0f172a;
-  --text:#e5e7eb;
+  --bg:#020617; --card:#0f172a; --text:#e5e7eb;
 }
-body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:var(--bg);
-  color:var(--text);
-  transition:.3s;
-}
+*{box-sizing:border-box;font-family:Inter,system-ui}
+body{margin:0;background:var(--bg);color:var(--text)}
 header{
   background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  padding:24px;
-  text-align:center;
+  color:white;padding:20px;text-align:center
 }
-.container{max-width:560px;margin:auto;padding:16px}
+.container{max-width:520px;margin:auto;padding:16px}
 .card{
-  background:var(--card);
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:16px;
+  background:var(--card);border-radius:14px;
+  padding:16px;margin-bottom:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08)
 }
-h2{
-  font-size:18px;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:8px;
-  border-radius:10px;
-  border:2px solid #e5e7eb;
-  background:var(--card);
-  color:var(--text);
+button,input,select{
+  width:100%;padding:12px;margin-top:8px;
+  border-radius:10px;border:1px solid #94a3b8
 }
 button{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  border:none;
-  cursor:pointer;
-  font-weight:600;
+  background:var(--primary);color:white;
+  border:none;font-weight:600;cursor:pointer
 }
-.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mode div{
-  padding:12px;
-  border-radius:10px;
-  border:2px solid #e5e7eb;
-  text-align:center;
-  cursor:pointer;
+button.danger{background:#dc2626}
+.stat{display:flex;justify-content:space-between;margin-top:6px}
+.tip{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;padding:14px;border-radius:12px
 }
-.mode .active{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  border:none;
-}
-.hidden{display:none}
 table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
+  width:100%;border-collapse:collapse;margin-top:10px
 }
 th,td{
-  padding:10px;
-  border-bottom:1px solid #e5e7eb;
-  text-align:left;
+  padding:8px;border-bottom:1px solid #cbd5f5;
+  text-align:left
 }
-th{opacity:.7}
-.toggle, .reset{
-  position:fixed;
-  bottom:14px;
-  padding:12px 14px;
-  border-radius:50%;
-}
-.toggle{right:14px}
-.reset{left:14px;background:#ef4444}
+th{font-weight:600}
 </style>
 </head>
 
 <body>
-
 <header>
-<h1>💰 CashFlow Compass</h1>
-<p>Competition-Ready Smart Budget Planner</p>
+<h1>💰 CashFlow Capitals</h1>
+<p>Simple • Smart • Competition Ready</p>
 </header>
-
-<button class="toggle" onclick="toggleDark()">🌙</button>
-<button class="reset" onclick="resetApp()">🔄</button>
 
 <div class="container">
 
 <div class="card">
-<h2>🎯 Select Mode</h2>
-<div class="mode">
-  <div id="regBtn" onclick="setMode('regular')">Regular Income</div>
-  <div id="futBtn" onclick="setMode('future')">Future Planning</div>
-</div>
-</div>
-
-<!-- REGULAR MODE -->
-<div id="regular" class="hidden">
-<div class="card">
-<h2>💵 Monthly Income</h2>
-<input id="regIncome" type="number" placeholder="Monthly income ₹">
-<button onclick="calcRegular()">Calculate</button>
+<button onclick="toggleDark()">🌓 Toggle Dark Mode</button>
 </div>
 
 <div class="card">
-<h2>📊 Recommendation</h2>
-<canvas id="regChart"></canvas>
-<table id="regTable"></table>
-</div>
-</div>
-
-<!-- FUTURE MODE -->
-<div id="future" class="hidden">
-<div class="card">
-<h2>📆 Future Plan</h2>
-<input id="futureMoney" type="number" placeholder="Total money in future ₹">
-<input id="futureYears" type="number" placeholder="Years">
-<input id="goalCost" type="number" placeholder="Goal cost ₹">
-<button onclick="calcFuture()">Calculate</button>
+<h2>Monthly Income</h2>
+<input id="income" type="number" placeholder="Enter income">
+<button onclick="saveIncome()">Save</button>
 </div>
 
 <div class="card">
-<h2>📊 Monthly Recommendation</h2>
-<canvas id="futChart"></canvas>
-<table id="futTable"></table>
+<h2>Dashboard</h2>
+<div class="stat"><span>Balance</span><b>₹<span id="balance">0</span></b></div>
+<div class="stat"><span>Daily Limit</span><b>₹<span id="daily">0</span></b></div>
 </div>
+
+<div class="card">
+<h2>Add Expense</h2>
+<input id="amount" type="number" placeholder="Amount">
+<select id="category">
+  <option>Food</option>
+  <option>Shopping</option>
+  <option>Entertainment</option>
+</select>
+<button onclick="addExpense()">Add Expense</button>
+</div>
+
+<div class="card">
+<h2>Spending Chart</h2>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+<h2>📊 Recommended Monthly Split</h2>
+<table>
+<thead>
+<tr><th>Category</th><th>₹ Amount</th></tr>
+</thead>
+<tbody id="recTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h2>🤖 Smart Tips</h2>
+<div class="tip" id="tipsBox">Start tracking to see tips.</div>
+</div>
+
+<div class="card">
+<button class="danger" onclick="resetAll()">Reset All Data</button>
 </div>
 
 </div>
 
 <script>
-let state=JSON.parse(localStorage.getItem("cfc"))||{mode:null,dark:false};
-function save(){localStorage.setItem("cfc",JSON.stringify(state));}
+let state = JSON.parse(localStorage.getItem("cfc")) || {
+  income:0,
+  expenses:[],
+  dark:false
+};
+
+function save(){localStorage.setItem("cfc",JSON.stringify(state))}
 
 document.body.classList.toggle("dark",state.dark);
+
 function toggleDark(){
   state.dark=!state.dark;
   document.body.classList.toggle("dark");
   save();
 }
 
-function resetApp(){
-  if(confirm("Reset all data?")){
-    localStorage.removeItem("cfc");
-    location.reload();
+function saveIncome(){
+  state.income=+income.value;
+  save();update();
+}
+
+function addExpense(){
+  if(amount.value<=0) return;
+  state.expenses.push({a:+amount.value,c:category.value});
+  amount.value="";
+  save();update();
+}
+
+function resetAll(){
+  if(!confirm("Reset all financial data?"))return;
+  state.income=0;
+  state.expenses=[];
+  save();update();
+}
+
+function update(){
+  income.value=state.income;
+  let spent=state.expenses.reduce((a,b)=>a+b.a,0);
+  balance.innerText=state.income-spent;
+  daily.innerText=Math.floor((state.income-spent)/30);
+
+  drawChart();
+  drawRecommendations();
+  generateTips(spent);
+}
+
+function drawChart(){
+  if(window.chartObj)chartObj.destroy();
+  let cats={Food:0,Shopping:0,Entertainment:0};
+  state.expenses.forEach(e=>cats[e.c]+=e.a);
+  chartObj=new Chart(chart,{
+    type:"bar",
+    data:{
+      labels:Object.keys(cats),
+      datasets:[{data:Object.values(cats)}]
+    },
+    options:{plugins:{legend:{display:false}}}
+  });
+}
+
+function drawRecommendations(){
+  let tbody=document.getElementById("recTable");
+  tbody.innerHTML="";
+  let split={Food:.4,Shopping:.3,Entertainment:.3};
+  for(let k in split){
+    let tr=document.createElement("tr");
+    tr.innerHTML=`<td>${k}</td><td>₹${Math.round(state.income*split[k])}</td>`;
+    tbody.appendChild(tr);
   }
 }
 
-function setMode(m){
-  state.mode=m; save();
-  regular.classList.toggle("hidden",m!=="regular");
-  future.classList.toggle("hidden",m!=="future");
-  regBtn.classList.toggle("active",m==="regular");
-  futBtn.classList.toggle("active",m==="future");
-}
-if(state.mode) setMode(state.mode);
-
-let rChart,fChart;
-
-function buildTable(el,data,total){
-  el.innerHTML=`
-    <tr><th>Category</th><th>₹ / Month</th><th>%</th></tr>`+
-    data.map(d=>`
-    <tr>
-      <td>${d.name}</td>
-      <td>₹${Math.round(d.val)}</td>
-      <td>${Math.round(d.val/total*100)}%</td>
-    </tr>`).join("");
+function generateTips(spent){
+  let box=document.getElementById("tipsBox");
+  if(state.income===0){
+    box.innerText="Add income to unlock smart tips.";
+    return;
+  }
+  let pct=(spent/state.income)*100;
+  if(pct<40) box.innerText="Great control! Consider saving more or investing.";
+  else if(pct<70) box.innerText="Balanced spending. Keep tracking daily expenses.";
+  else box.innerText="High spending detected. Reduce non-essentials this week.";
 }
 
-/* REGULAR */
-function calcRegular(){
-  let i=+regIncome.value;
-  if(i<=0) return alert("Enter income");
-
-  let d=[
-    {name:"Food",val:i*.35},
-    {name:"Shopping",val:i*.20},
-    {name:"Entertainment",val:i*.15},
-    {name:"Savings",val:i*.20},
-    {name:"Other",val:i*.10},
-  ];
-
-  if(rChart) rChart.destroy();
-  rChart=new Chart(regChart,{
-    type:"doughnut",
-    data:{labels:d.map(x=>x.name),datasets:[{data:d.map(x=>x.val)}]},
-    options:{cutout:"65%"}
-  });
-
-  buildTable(regTable,d,i);
-}
-
-/* FUTURE */
-function calcFuture(){
-  let total=+futureMoney.value, years=+futureYears.value, cost=+goalCost.value;
-  if(total<=0||years<=0||cost<=0) return alert("Fill all fields");
-
-  let m=years*12;
-  let monthly=total/m;
-  let save=cost/m;
-  let spend=monthly-save;
-  if(spend<=0) return alert("Goal not feasible");
-
-  let d=[
-    {name:"Food",val:spend*.4},
-    {name:"Shopping",val:spend*.25},
-    {name:"Entertainment",val:spend*.2},
-    {name:"Other",val:spend*.15},
-  ];
-
-  if(fChart) fChart.destroy();
-  fChart=new Chart(futChart,{
-    type:"doughnut",
-    data:{labels:d.map(x=>x.name),datasets:[{data:d.map(x=>x.val)}]},
-    options:{cutout:"65%"}
-  });
-
-  buildTable(futTable,d,spend);
-}
+update();
 </script>
 
 </body>
